@@ -1,8 +1,12 @@
 package currencies.lexer;
 
+import currencies.reader.CharPosition;
+
 public class Token {
     private TokenType type;
     private Object value;
+    private CharPosition position;
+
 
     public TokenType getType() {
         return type;
@@ -12,21 +16,29 @@ public class Token {
         return value;
     }
 
-    public long getPosition() {
+    public CharPosition getPosition() {
         return position;
     }
 
-    private long position;
 
-    public Token(TokenType type, Object value, long position) {
+    public Token(TokenType type, Object value, CharPosition position) {
         this.type = type;
         this.value = value;
         this.position = position;
     }
 
-    public Token(TokenType type, long position) {
+    public Token(TokenType type, CharPosition position) {
         this.type = type;
         this.position = position;
+    }
+
+    @Override
+    public String toString() {
+        return "Token{" +
+                "type=" + type +
+                ", value=" + (value == null ? "null" : value) +
+                ", position=" + position +
+                '}';
     }
 }
 

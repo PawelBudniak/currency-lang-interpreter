@@ -4,12 +4,12 @@ public class CharPosition {
 
     private long filePosition;
     private int line;
-    private int charAtLine;
+    private int charNumber;
 
-    public CharPosition(long filePosition, int line, int charAtLine) {
+    public CharPosition(long filePosition, int line, int charNumber) {
         this.filePosition = filePosition;
         this.line = line;
-        this.charAtLine = charAtLine;
+        this.charNumber = charNumber;
     }
     public long getFilePosition() {
         return filePosition;
@@ -19,7 +19,16 @@ public class CharPosition {
         return line;
     }
 
-    public int getCharAtLine() {
-        return charAtLine;
+    public int getCharNumber() {
+        return charNumber;
+    }
+
+    @Override
+    public String toString() {
+        return "CharPosition{" +
+                "filePosition=" + filePosition +
+                ", line=" + line +
+                ", charNumber=" + charNumber +
+                '}';
     }
 }

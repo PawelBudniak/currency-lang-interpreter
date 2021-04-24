@@ -1,8 +1,9 @@
 package currencies.lexer;
 
-
-// All keyword tokens are named according to the convention:
-// T_KW_<keyword_in_uppercase>
+/**
+ * All keyAll keyword tokens are named according to the convention:
+ * T_KW_<keyword_in_uppercase>
+ */
 public enum TokenType {
 
     T_PAREN_OPEN,
@@ -43,6 +44,6 @@ public enum TokenType {
     T_UNKNOWN;
 
     public static int kwPrefixLen(){
-        return 5;
+        return "T_KW_".length();
     }
 }

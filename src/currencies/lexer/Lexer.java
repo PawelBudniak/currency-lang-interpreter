@@ -1,6 +1,7 @@
 package currencies.lexer;
 
 import currencies.Currency;
+import currencies.reader.CharPosition;
 import currencies.reader.CodeInput;
 
 import java.io.IOException;
@@ -15,13 +16,21 @@ public class Lexer {
 
     private CodeInput source;
     private char current;
-    private long position;
+    private CharPosition position;
 
     private static final int MAX_ITER = 10_000;
 
-    public Token getNextToken() throws IOException {
-        skipWhitespace();
-        skipComments();
+    public Lexer(CodeInput source) {
+        this.source = source;
+        current = nextChar();
+    }
+
+    public Token getNextToken() {
+
+        while (current == '#' || Character.isWhitespace((current))) {
+            skipWhitespace();
+            skipComments();
+        }
 
         position = getPosition();
         if (isEOT())
@@ -49,14 +58,14 @@ public class Lexer {
             return token;
         }
 
-       token = buildPotentialTwoCharToken();
+        token = buildPotentialTwoCharToken();
         if (token != null) return token;
 
         token = buildOneCharToken();
         if (token != null) return token;
 
         current = nextChar();
-        return new Token(TokenType.T_UNKNOWN, position);
+        return new Token(TokenType.T_UNKNOWN,  position);
 
     }
 
@@ -143,12 +152,21 @@ public class Lexer {
     private Token buildNumber() {
         // TODO: allow 0 na starcie tylko jesli poprzedzone kropka, tylko 1 kropka mozliwa
         if (Character.isDigit(current)){
+
             StringBuilder literal = new StringBuilder();
+            boolean seenDecimalPoint = false;
             int i = 0;
+
             do {
+                if (current == '.') {
+                    if (seenDecimalPoint)
+                        return new Token(TokenType.T_UNKNOWN, "Multiple decimal points in a number", position);
+                    seenDecimalPoint = true;
+                }
+
                 literal.append(current);
                 current = nextChar();
-            } while( (Character.isDigit(current) || current == '.') && isLegalIter(++i));
+            } while((Character.isDigit(current) || current == '.') && isLegalIter(++i));
 
             BigDecimal value = new BigDecimal(literal.toString());
             return new Token(TokenType.T_NUMBER_LITERAL, value, position);
@@ -166,17 +184,6 @@ public class Lexer {
         return Character.isLetter(c) && Character.isLowerCase(c);
     }
 
-//    private Token buildInt() throws IOException {
-//        if (isValidNumberStart(current)){
-//            int val = 0;
-//            int i = 0;
-//            do{
-//                val = val * 10 + current - '0';
-//                current = nextChar();
-//            } while (Character.isDigit())
-//        }
-//    }
-
     private boolean isValidIntStart(char c){
         return Character.isDigit(c) && c != '0';
     }
@@ -185,7 +192,7 @@ public class Lexer {
         return !source.hasNext();
     }
 
-    private long getPosition() {
+    private CharPosition getPosition() {
         return source.getPosition();
     }
 
@@ -199,7 +206,7 @@ public class Lexer {
             int i = 0;
             do {
                 current = nextChar();
-            } while (current != '\n' && !isLegalIter(++i));
+            } while (current != '\n' && isLegalIter(++i));
         }
     }
 
@@ -213,11 +220,18 @@ public class Lexer {
             int i = 0;
             StringBuilder literal = new StringBuilder();
             do{
-                current = nextChar();
                 literal.append(current);
+                current = nextChar();
             } while (current != '\'' && isLegalIter(++i));
 
-            return new Token(TokenType.T_STR_LITERAL, literal.toString(), position);
+            if (current == '\'') {
+                literal.append(current);
+                current = nextChar();
+                return new Token(TokenType.T_STR_LITERAL, literal.toString(), position);
+            }
+            if (isEOT()){
+                return new Token(TokenType.T_IDENTIFIER, position);
+            }
         }
         return null;
     }

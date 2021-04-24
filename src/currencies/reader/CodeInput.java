@@ -3,7 +3,7 @@ package currencies.reader;
 import java.io.IOException;
 
 public interface CodeInput {
-    long getPosition();
+    CharPosition getPosition();
     char nextChar();
     boolean hasNext();
 
