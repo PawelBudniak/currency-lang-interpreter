@@ -17,7 +17,7 @@ public class Lexer {
     private char current;
     private long position;
 
-    private static final int MAX_ITER = 100_000;
+    private static final int MAX_ITER = 10_000;
 
     public Token getNextToken() throws IOException {
         skipWhitespace();
@@ -31,44 +31,90 @@ public class Lexer {
 
         token = buildString();
         if (token != null) return token;
-//        token = buildInt();
-//        if (token != null) return token;
         token = buildNumber();
         if (token != null) return token;
 
-        //TODO: keyword check
         token = buildIdentifier();
         if (token != null) {
+            // check if the potential identifier is not a keyword or a valid currency code
+
             TokenType keyword = keywordMap.get(token.getValue());
             if (keyword != null)
                 return new Token(keyword, token.getValue(), position);
+
             Currency.Type code = currencyCodes.get(token.getValue());
             if (code != null)
                 return new Token(TokenType.T_CURRENCY_TYPE, code, position);
-            else
-                return token;
+
+            return token;
         }
 
-        
-        
-        
+       token = buildPotentialTwoCharToken();
+        if (token != null) return token;
 
+        token = buildOneCharToken();
+        if (token != null) return token;
 
-
-
-        TokenType type;
-
-
-
-
-         type = tokenTypeMap.get(current);
-
-
-         return new Token(TokenType.T_UNKNOWN, position);
+        current = nextChar();
+        return new Token(TokenType.T_UNKNOWN, position);
 
     }
 
-    private Token buildIdentifier() throws IOException {
+    private Token buildPotentialTwoCharToken(){
+        switch (current){
+            case '=':
+                current = nextChar();
+                if (current == '=') {
+                    current = nextChar();
+                    return new Token(TokenType.T_EQUALS, position);
+                }
+                else
+                    return new Token(TokenType.T_ASSIGNMENT, position);
+            case '!':
+                current = nextChar();
+                if (current == '=') {
+                    current = nextChar();
+                    return new Token(TokenType.T_NOTEQUALS, position);
+                }
+                else
+                    return new Token(TokenType.T_EXCLAMATION, position);
+            case '<':
+                current = nextChar();
+                if (current == '='){
+                    current = nextChar();
+                    return new Token(TokenType.T_LTE, position);
+                }
+                else
+                    return new Token(TokenType.T_LT, position);
+            case '>':
+                current = nextChar();
+                if (current == '='){
+                    current = nextChar();
+                    return new Token(TokenType.T_GTE, position);
+                }
+                else
+                    return new Token(TokenType.T_GT, position);
+            case '&':
+                current = nextChar();
+                if (current == '&'){
+                    current = nextChar();
+                    return new Token(TokenType.T_AND, position);
+                }
+                else
+                    return null;
+            case '|':
+                current = nextChar();
+                if (current == '|'){
+                    current = nextChar();
+                    return new Token(TokenType.T_OR, position);
+                }
+                else
+                    return null;
+        }
+        return null;
+    }
+
+    private Token buildIdentifier() {
         if (Character.isLetter(current)){
             StringBuilder id = new StringBuilder();
             int i = 0;
@@ -84,9 +130,18 @@ public class Lexer {
         return null;
     }
 
+    private Token buildOneCharToken(){
+        TokenType type = tokenTypeMap.get(current);
+        if (type != null){
+            current = nextChar();
+            return new Token(type, position);
+        }
+        return null;
+    }
+
 
     private Token buildNumber() {
-        // TODO: allow 0 na starcie tylko jesli poprzedzone kropka
+        // TODO: allow 0 na starcie tylko jesli poprzedzone kropka, tylko 1 kropka mozliwa
         if (Character.isDigit(current)){
             StringBuilder literal = new StringBuilder();
             int i = 0;
@@ -96,30 +151,7 @@ public class Lexer {
             } while( (Character.isDigit(current) || current == '.') && isLegalIter(++i));
 
             BigDecimal value = new BigDecimal(literal.toString());
-
-
-            // try building a currency literal (e.g. 0.23gbp)
-            if (isValidCurrencyCodeChar(current)){
-                StringBuilder currencyCode = new StringBuilder();
-                int j = 0;
-                do {
-                    currencyCode.append(current);
-                    current = nextChar();
-                    ++j;
-                } while (isLegalIter(j) && isValidCurrencyCodeChar(current));
-
-                Currency.Type type = currencyCodes.get(currencyCode.toString());
-                // if the currency code is incorrect  then the token is invalid
-                if (type == null)
-                    invalidToken();
-                else{
-                    Currency currency = new Currency(value, type);
-                    return new Token(TokenType.T_CURRENCY_LITERAL, currency, position);
-                }
-            }
-            else
-                return new Token(TokenType.T_NUMBER_LITERAL, value, position);
-
+            return new Token(TokenType.T_NUMBER_LITERAL, value, position);
 
         }
         return null;
@@ -198,16 +230,16 @@ public class Lexer {
 
 
 
-    private static Map<String, TokenType> tokenTypeMap = Map.ofEntries(
-            entry("/", TokenType.T_DIV),
-            entry("*",TokenType.T_MULT),
-            entry("+", TokenType.T_PLUS),
-            entry("-", TokenType.T_MINUS),
-            entry("{", TokenType.T_CURLBRACKET_OPEN),
-            entry("}", TokenType.T_CURLBRACKET_CLOSE),
-            entry(";", TokenType.T_SEMICOLON),
-            entry("(", TokenType.T_PAREN_OPEN),
-            entry(")", TokenType.T_PAREN_CLOSE)
+    private static Map<Character, TokenType> tokenTypeMap = Map.ofEntries(
+            entry('/', TokenType.T_DIV),
+            entry('*',TokenType.T_MULT),
+            entry('+', TokenType.T_PLUS),
+            entry('-', TokenType.T_MINUS),
+            entry('{', TokenType.T_CURLBRACKET_OPEN),
+            entry('}', TokenType.T_CURLBRACKET_CLOSE),
+            entry(';', TokenType.T_SEMICOLON),
+            entry('(', TokenType.T_PAREN_OPEN),
+            entry(')', TokenType.T_PAREN_CLOSE)
     );
 
     private static Map<String, Currency.Type> currencyCodes = Arrays.stream(Currency.Type.values())
