@@ -1,7 +1,7 @@
 package currencies.lexer;
 
 /**
- * All keyAll keyword tokens are named according to the convention:
+ * All keyword tokens are named according to the convention:
  * T_KW_<keyword_in_uppercase>
  */
 public enum TokenType {

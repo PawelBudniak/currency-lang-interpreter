@@ -4,8 +4,6 @@ import java.io.*;
 
 public class CodeInputStream implements CodeInput {
 
-    public static final int EOF_CODE = -1;
-
     private Reader reader;
     private int lineNumber = 0;
     private int charNumber = -1;

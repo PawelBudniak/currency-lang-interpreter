@@ -4,7 +4,6 @@ import currencies.Currency;
 import currencies.reader.CharPosition;
 import currencies.reader.CodeInput;
 
-import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.Map;
@@ -17,6 +16,7 @@ public class Lexer {
     private CodeInput source;
     private char current;
     private CharPosition position;
+    private Token currentToken;
 
     private static final int MAX_ITER = 10_000;
 
@@ -25,7 +25,24 @@ public class Lexer {
         current = nextChar();
     }
 
-    public Token getNextToken() {
+    public Token getNextToken(){
+        currentToken = nextToken();
+        return currentToken;
+    }
+
+    /**
+     * Returns a token that was returned by the previous call to nextToken().
+     * If this is called before any calls to nextToken(), a null value is returned.
+     */
+    public Token currentToken() {
+        return currentToken;
+    }
+
+    /**
+     * Returns a next token from the source and automatically advances to the next one.
+     */
+
+    private Token nextToken() {
 
         while (current == '#' || Character.isWhitespace((current))) {
             skipWhitespace();
@@ -124,13 +141,14 @@ public class Lexer {
     }
 
     private Token buildIdentifier() {
-        if (Character.isLetter(current)){
+        if (Character.isLetter(current) || current == '_'){
             StringBuilder id = new StringBuilder();
             int i = 0;
             do{
                 id.append(current);
                 current = nextChar();
-            } while( (Character.isDigit(current) || Character.isLetter(current)) && isLegalIter(++i) );
+            } while( (Character.isDigit(current) || Character.isLetter(current) || current == '_')
+                    && isLegalIter(++i) );
 
             return new Token(TokenType.T_IDENTIFIER, id.toString(), position);
 
@@ -150,7 +168,7 @@ public class Lexer {
 
 
     private Token buildNumber() {
-        // TODO: allow 0 na starcie tylko jesli poprzedzone kropka, tylko 1 kropka mozliwa
+        // TODO: allow 0 na starcie tylko jesli poprzedzone kropka
         if (Character.isDigit(current)){
 
             StringBuilder literal = new StringBuilder();
@@ -219,13 +237,15 @@ public class Lexer {
         if (current == '\''){
             int i = 0;
             StringBuilder literal = new StringBuilder();
-            do{
+
+            // dont use do while here, we want to ignore the quotation marks in the str value
+            current = nextChar();
+            while (current != '\'' && isLegalIter(++i)) {
                 literal.append(current);
                 current = nextChar();
-            } while (current != '\'' && isLegalIter(++i));
+            }
 
             if (current == '\'') {
-                literal.append(current);
                 current = nextChar();
                 return new Token(TokenType.T_STR_LITERAL, literal.toString(), position);
             }
@@ -236,9 +256,11 @@ public class Lexer {
         return null;
     }
 
-    // TODO: throw at EOT?
     private boolean isLegalIter(int nIter){
-        return nIter < MAX_ITER && !isEOT();
+        if (nIter > MAX_ITER)
+            throw new TooLongTokenException("Max token length is" + MAX_ITER);
+
+        return !isEOT();
     }
 
 

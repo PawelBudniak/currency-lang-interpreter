@@ -7,7 +7,6 @@ import java.io.RandomAccessFile;
 
 public class FileReader implements CodeInput {
 
-    public static final int EOF_CODE = -1;
 
     private RandomAccessFile file;
     private boolean isEOF;
