@@ -168,7 +168,6 @@ public class Lexer {
 
 
     private Token buildNumber() {
-        // TODO: allow 0 na starcie tylko jesli poprzedzone kropka
         if (Character.isDigit(current)){
 
             StringBuilder literal = new StringBuilder();
@@ -193,18 +192,6 @@ public class Lexer {
         return null;
     }
 
-    private void invalidToken(){
-        throw new RuntimeException();
-    }
-
-
-    private boolean isValidCurrencyCodeChar(char c){
-        return Character.isLetter(c) && Character.isLowerCase(c);
-    }
-
-    private boolean isValidIntStart(char c){
-        return Character.isDigit(c) && c != '0';
-    }
 
     private boolean isEOT(){
         return !source.hasNext();
@@ -250,7 +237,7 @@ public class Lexer {
                 return new Token(TokenType.T_STR_LITERAL, literal.toString(), position);
             }
             if (isEOT()){
-                return new Token(TokenType.T_IDENTIFIER, position);
+                return new Token(TokenType.T_UNKNOWN, "EOF reached before str closing quotation mark", position);
             }
         }
         return null;
@@ -282,17 +269,11 @@ public class Lexer {
             .collect(Collectors.toMap(value -> value.toString().toLowerCase(),
                                       value -> value));
 
+
+    // get keyword strings from token enum values that start with "T_KW_"
     private static Map<String, TokenType> keywordMap = Arrays.stream(TokenType.values())
             .filter(value -> value.toString().startsWith("T_KW_"))
             .collect(Collectors.toMap(value -> value.toString().substring(TokenType.kwPrefixLen()).toLowerCase(),
                                       value -> value));
-//    = Map.ofEntries(
-//            entry("gbp", Currency.Type.GBP),
-//            entry("eur", Currency.Type.EUR),
-//            entry("pln", Currency.Type.PLN),
-//            entry("chp", Currency.Type.CHP),
-//            entry("usd", Currency.Type.USD)
-//    );
-
 
 }
