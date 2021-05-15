@@ -28,7 +28,7 @@ public enum TokenType {
     T_IDENTIFIER,
     T_NUMBER_LITERAL,
     T_STR_LITERAL,
-    T_CURRENCY_TYPE,
+    T_CURRENCY_CODE,
     T_KW_NUMBER,
     T_KW_BOOl,
     T_KW_CURRENCY,

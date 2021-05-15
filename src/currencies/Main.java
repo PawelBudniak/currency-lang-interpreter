@@ -22,6 +22,8 @@ public class Main {
                 System.out.println(token);
                 token = lexer.getNextToken();
             }
+            String s = new StringBuilder().append('\\').append('t').toString();
+            System.out.println(new Token(TokenType.T_STR_LITERAL, s,  new CharPosition(10,10,10)));
 
         } catch (FileNotFoundException e) {
             System.err.println("This file does not exist");

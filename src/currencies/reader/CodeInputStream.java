@@ -17,7 +17,7 @@ public class CodeInputStream implements CodeInput {
 
     @Override
     public CharPosition getPosition() {
-        return new CharPosition(-1, lineNumber, charNumber);
+        return new CharPosition(NOT_SUPPORTED, lineNumber, charNumber);
 
     }
 

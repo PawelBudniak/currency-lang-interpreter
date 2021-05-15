@@ -1,10 +1,10 @@
 package currencies.lexer;
 
 import currencies.Currency;
+import currencies.NumberFactory;
 import currencies.reader.CharPosition;
 import currencies.reader.CodeInput;
 
-import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -12,7 +12,6 @@ import java.util.stream.Collectors;
 import static java.util.Map.entry;
 
 public class Lexer {
-
     private CodeInput source;
     private char current;
     private CharPosition position;
@@ -70,7 +69,7 @@ public class Lexer {
 
             Currency.Type code = currencyCodes.get(token.getValue());
             if (code != null)
-                return new Token(TokenType.T_CURRENCY_TYPE, code, position);
+                return new Token(TokenType.T_CURRENCY_CODE, code, position);
 
             return token;
         }
@@ -185,7 +184,7 @@ public class Lexer {
                 current = nextChar();
             } while((Character.isDigit(current) || current == '.') && isLegalIter(++i));
 
-            BigDecimal value = new BigDecimal(literal.toString());
+            Number value = NumberFactory.create(literal.toString());
             return new Token(TokenType.T_NUMBER_LITERAL, value, position);
 
         }

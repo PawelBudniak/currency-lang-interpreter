@@ -1,6 +1,7 @@
 package currencies.test;
 
 import currencies.Currency;
+import currencies.NumberFactory;
 import currencies.lexer.Lexer;
 import currencies.lexer.Token;
 import currencies.lexer.TokenType;
@@ -9,7 +10,6 @@ import org.junit.jupiter.api.*;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
-import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -45,7 +45,7 @@ class LexerTest {
 
         assertAll(
                 ()-> assertEquals(TokenType.T_NUMBER_LITERAL, l.getNextToken().getType()),
-                ()->assertEquals(new BigDecimal("32"), l.currentToken().getValue())
+                ()->assertEquals(NumberFactory.create("32"), l.currentToken().getValue())
         );
     }
 
@@ -83,7 +83,7 @@ class LexerTest {
 
         assertAll(
                 ()-> assertEquals(TokenType.T_NUMBER_LITERAL, l.getNextToken().getType()),
-                ()->assertEquals(new BigDecimal("69"), l.currentToken().getValue())
+                ()->assertEquals(NumberFactory.create("69"), l.currentToken().getValue())
         );
     }
 
@@ -93,7 +93,7 @@ class LexerTest {
 
         assertAll(
                 ()-> assertEquals(TokenType.T_NUMBER_LITERAL, l.getNextToken().getType()),
-                ()->assertEquals(new BigDecimal("69.69"), l.currentToken().getValue())
+                ()->assertEquals(NumberFactory.create("69.69"), l.currentToken().getValue())
         );
     }
 
@@ -146,7 +146,7 @@ class LexerTest {
         assertAll(
                 "Ids can not start with a number",
                 ()-> assertEquals(TokenType.T_NUMBER_LITERAL, l.getNextToken().getType()),
-                ()-> assertEquals(new BigDecimal("69"), l.currentToken().getValue()),
+                ()-> assertEquals(NumberFactory.create("69"), l.currentToken().getValue()),
                 ()-> assertEquals(TokenType.T_IDENTIFIER, l.getNextToken().getType()),
                 ()-> assertEquals("foo", l.currentToken().getValue())
         );
@@ -165,7 +165,7 @@ class LexerTest {
 
         assertAll(
                 "Currency codes are recognized",
-                ()-> assertEquals(TokenType.T_CURRENCY_TYPE, l.getNextToken().getType()),
+                ()-> assertEquals(TokenType.T_CURRENCY_CODE, l.getNextToken().getType()),
                 ()-> assertEquals(Currency.Type.PLN, l.currentToken().getValue())
         );
     }
@@ -264,7 +264,7 @@ class LexerTest {
         void number(){
             assertAll(
                     () -> assertEquals(TokenType.T_NUMBER_LITERAL, t.getType()),
-                    ()-> assertEquals(new BigDecimal("42"), t.getValue())
+                    ()-> assertEquals(NumberFactory.create("42"), t.getValue())
             );
         }
         @Test @Order(4)
@@ -307,7 +307,7 @@ class LexerTest {
         @Test @Order(3)
         void currency_gbp(){
             assertAll(
-                    () -> assertEquals(TokenType.T_CURRENCY_TYPE, t.getType()),
+                    () -> assertEquals(TokenType.T_CURRENCY_CODE, t.getType()),
                     () -> assertEquals(Currency.Type.GBP, t.getValue())
             );
         }
@@ -318,7 +318,7 @@ class LexerTest {
         @Test @Order(5)
         void currency_pln(){
             assertAll(
-                    () -> assertEquals(TokenType.T_CURRENCY_TYPE, t.getType()),
+                    () -> assertEquals(TokenType.T_CURRENCY_CODE, t.getType()),
                     () -> assertEquals(Currency.Type.PLN, t.getValue())
             );
         }
@@ -326,7 +326,7 @@ class LexerTest {
         void number(){
             assertAll(
                     () -> assertEquals(TokenType.T_NUMBER_LITERAL, t.getType()),
-                    () -> assertEquals(new BigDecimal("4.21"), t.getValue())
+                    () -> assertEquals(NumberFactory.create("4.21"), t.getValue())
             );
         }
         @Test @Order(7)
@@ -361,7 +361,7 @@ class LexerTest {
         void number_1(){
             assertAll(
                     () -> assertEquals(TokenType.T_NUMBER_LITERAL, t.getType()),
-                    () -> assertEquals(new BigDecimal("43.2"), t.getValue())
+                    () -> assertEquals(NumberFactory.create("43.2"), t.getValue())
             );
         }
         @Test @Order(2)
@@ -372,7 +372,7 @@ class LexerTest {
         void number_2(){
             assertAll(
                     () -> assertEquals(TokenType.T_NUMBER_LITERAL, t.getType()),
-                    () -> assertEquals(new BigDecimal("90"), t.getValue())
+                    () -> assertEquals(NumberFactory.create("90"), t.getValue())
             );
         }
         @Test @Order(4)
@@ -383,7 +383,7 @@ class LexerTest {
         void number_3(){
             assertAll(
                     () -> assertEquals(TokenType.T_NUMBER_LITERAL, t.getType()),
-                    () -> assertEquals(new BigDecimal("21.3"), t.getValue())
+                    () -> assertEquals(NumberFactory.create("21.3"), t.getValue())
             );
         }
         @Test @Order(6)
@@ -406,7 +406,7 @@ class LexerTest {
 //                ()-> assertEquals("myvar", l.currentToken().getValue()),
 //                ()-> assertEquals(TokenType.T_ASSIGNMENT, l.getNextToken().getType()),
 //                ()-> assertEquals(TokenType.T_NUMBER_LITERAL, l.getNextToken().getType()),
-//                ()-> assertEquals(new BigDecimal("42"), l.currentToken().getValue()),
+//                ()-> assertEquals(NumberFactory.of("42"), l.currentToken().getValue()),
 //                ()-> assertEquals( TokenType.T_SEMICOLON, l.getNextToken().getType()),
 //                ()-> assertEquals(TokenType.T_EOT, l.getNextToken().getType())
 //        );

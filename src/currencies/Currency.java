@@ -1,16 +1,18 @@
 package currencies;
 
-import java.math.BigDecimal;
-
 public class Currency {
     public static final int CODE_LEN = 3;
 
-    private BigDecimal value;
+    private Number value;
     private Type type;
 
-    public Currency(BigDecimal value, Type type) {
-        this.value = value;
+    public Currency(String strvalue, Type type) {
+        this.value = valueOf(strvalue);
         this.type = type;
+    }
+
+    public static Number valueOf(String strvalue){
+        return NumberFactory.create(strvalue);
     }
 
 
