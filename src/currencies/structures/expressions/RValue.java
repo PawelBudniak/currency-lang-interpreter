@@ -13,11 +13,11 @@ public abstract class RValue {
         if (unaryOperator != null){
             if (unaryOperator.getType() == TokenType.T_MINUS ||
                     unaryOperator.getType() == TokenType.T_EXCLAMATION) {
-                str += unaryOperator.getValue();
+                str += unaryOperator.valueStr();
             }
             // currency cast
             else{
-                str += "[" + unaryOperator.getType().toString().toLowerCase() + "]";
+                str += "[" + unaryOperator.getValue().toString().toLowerCase() + "] ";
             }
         }
         return str;

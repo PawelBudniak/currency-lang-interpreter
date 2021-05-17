@@ -1,5 +1,6 @@
 package currencies.structures.simple_values;
 
+import currencies.Currency;
 import currencies.lexer.TokenType;
 import currencies.structures.expressions.RValue;
 
@@ -17,6 +18,9 @@ public class Literal extends RValue {
 
         if (type == TokenType.T_KW_STRING)
             return "'" + value + "'";
+
+        if (type == TokenType.T_KW_CURRENCY)
+            return ((Currency)value).getValue().toString() + ((Currency)value).getTypeStr();
 
         return value.toString();
     }

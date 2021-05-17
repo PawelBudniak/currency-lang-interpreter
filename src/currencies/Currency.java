@@ -23,6 +23,18 @@ public class Currency {
     }
 
 
+    public Number getValue() {
+        return value;
+    }
+
+    public Type getType() {
+        return type;
+    }
+
+    public String getTypeStr(){
+        return type.toString().toLowerCase();
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

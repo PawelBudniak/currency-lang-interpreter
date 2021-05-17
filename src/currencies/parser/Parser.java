@@ -180,7 +180,8 @@ public class Parser {
         return new ExchangeDeclaration(fromCurrency, toCurrency, value);
     }
 
-    private RValue tryParseRValue() {
+    RValue tryParseRValue() {
+
         return tryParseArithmeticExpression();
     }
 
@@ -262,7 +263,7 @@ public class Parser {
 
 
 
-    private ReturnStatement tryParseReturnStatement() {
+    ReturnStatement tryParseReturnStatement() {
         if (currentToken.getType() != T_KW_RETURN)
             return null;
 

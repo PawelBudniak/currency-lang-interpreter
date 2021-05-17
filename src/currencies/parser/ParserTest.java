@@ -13,10 +13,7 @@ import currencies.structures.expressions.Comparison;
 import currencies.structures.expressions.RValue;
 import currencies.structures.simple_values.FunctionCall;
 import currencies.structures.simple_values.Literal;
-import currencies.structures.statements.Assignment;
-import currencies.structures.statements.ExchangeDeclaration;
-import currencies.structures.statements.IfStatement;
-import currencies.structures.statements.Statement;
+import currencies.structures.statements.*;
 import org.junit.jupiter.api.Test;
 import static currencies.lexer.TokenType.*;
 
@@ -234,6 +231,42 @@ class ParserTest {
         assertEquals(statement, assignment.toString());
 
     }
+
+    @Test
+    void currencyCast(){
+        String str = "[pln] money";
+        Parser p = parserFromStringStream(str);
+        p.nextToken();
+
+        RValue value = p.tryParseRValue();
+
+        assertEquals(str, value.toString());
+    }
+
+    @Test
+    void returnStatement(){
+        String str = "return 3;";
+        Parser p = parserFromStringStream(str);
+        p.nextToken();
+
+        ReturnStatement value = p.tryParseReturnStatement();
+
+        assertEquals(str, value.toString());
+
+    }
+
+    @Test
+    void RValuesAsFunctionCallParameters(){
+        String funCall = "fun(fun2(x), 3 / 5, 12.34gbp);";
+        Parser p = parserFromStringStream(funCall);
+        p.nextToken();
+
+        FunctionCall value = (FunctionCall)p.tryParseAssignOrFunCall();
+
+        assertEquals(funCall, value.toString());
+
+    }
+
 
 
 
