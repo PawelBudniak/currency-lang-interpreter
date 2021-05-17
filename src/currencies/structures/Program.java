@@ -11,5 +11,16 @@ public class Program {
         this.functions = functions;
     }
 
+    public List<Function> getFunctions() {
+        return functions;
+    }
 
+    @Override
+    public String toString() {
+        StringBuilder str = new StringBuilder();
+        for (Function fun: functions){
+            str.append(fun);
+        }
+        return str.toString();
+    }
 }

@@ -40,5 +40,9 @@ public class Token {
                 ", position=" + position +
                 '}';
     }
+
+    public String valueStr(){
+        return value.toString();
+    }
 }
 

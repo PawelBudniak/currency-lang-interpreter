@@ -91,39 +91,39 @@ public class Lexer {
                 current = nextChar();
                 if (current == '=') {
                     current = nextChar();
-                    return new Token(TokenType.T_EQUALS, position);
+                    return new Token(TokenType.T_EQUALS, "==", position);
                 }
                 else
-                    return new Token(TokenType.T_ASSIGNMENT, position);
+                    return new Token(TokenType.T_ASSIGNMENT, "=", position);
             case '!':
                 current = nextChar();
                 if (current == '=') {
                     current = nextChar();
-                    return new Token(TokenType.T_NOTEQUALS, position);
+                    return new Token(TokenType.T_NOTEQUALS, "!=", position);
                 }
                 else
-                    return new Token(TokenType.T_EXCLAMATION, position);
+                    return new Token(TokenType.T_EXCLAMATION, "!", position);
             case '<':
                 current = nextChar();
                 if (current == '='){
                     current = nextChar();
-                    return new Token(TokenType.T_LTE, position);
+                    return new Token(TokenType.T_LTE, "<=", position);
                 }
                 else
-                    return new Token(TokenType.T_LT, position);
+                    return new Token(TokenType.T_LT, "<", position);
             case '>':
                 current = nextChar();
                 if (current == '='){
                     current = nextChar();
-                    return new Token(TokenType.T_GTE, position);
+                    return new Token(TokenType.T_GTE, ">=", position);
                 }
                 else
-                    return new Token(TokenType.T_GT, position);
+                    return new Token(TokenType.T_GT, ">", position);
             case '&':
                 current = nextChar();
                 if (current == '&'){
                     current = nextChar();
-                    return new Token(TokenType.T_AND, position);
+                    return new Token(TokenType.T_AND, "&&", position);
                 }
                 else
                     return null;
@@ -131,7 +131,7 @@ public class Lexer {
                 current = nextChar();
                 if (current == '|'){
                     current = nextChar();
-                    return new Token(TokenType.T_OR, position);
+                    return new Token(TokenType.T_OR, "||", position);
                 }
                 else
                     return null;
@@ -159,8 +159,9 @@ public class Lexer {
     private Token buildOneCharToken(){
         TokenType type = tokenTypeMap.get(current);
         if (type != null){
+            char ch = current;
             current = nextChar();
-            return new Token(type, position);
+            return new Token(type, String.valueOf(ch), position);
         }
         return null;
     }
@@ -184,7 +185,7 @@ public class Lexer {
                 current = nextChar();
             } while((Character.isDigit(current) || current == '.') && isLegalIter(++i));
 
-            Number value = NumberFactory.create(literal.toString());
+            Number value = NumberFactory.get(literal.toString());
             return new Token(TokenType.T_NUMBER_LITERAL, value, position);
 
         }
@@ -244,7 +245,7 @@ public class Lexer {
 
     private boolean isLegalIter(int nIter){
         if (nIter > MAX_ITER)
-            throw new TooLongTokenException("Max token length is" + MAX_ITER);
+            throw new TooLongTokenException("Max token length is" + MAX_ITER, source.getPosition());
 
         return !isEOT();
     }
@@ -261,7 +262,10 @@ public class Lexer {
             entry('}', TokenType.T_CURLBRACKET_CLOSE),
             entry(';', TokenType.T_SEMICOLON),
             entry('(', TokenType.T_PAREN_OPEN),
-            entry(')', TokenType.T_PAREN_CLOSE)
+            entry(')', TokenType.T_PAREN_CLOSE),
+            entry(',', TokenType.T_COMMA),
+            entry('[', TokenType.T_SQUAREBRACKET_OPEN),
+            entry(']', TokenType.T_SQUAREBRACKET_CLOSE)
     );
 
     private static Map<String, Currency.Type> currencyCodes = Arrays.stream(Currency.Type.values())

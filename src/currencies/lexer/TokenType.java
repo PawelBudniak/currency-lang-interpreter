@@ -25,6 +25,9 @@ public enum TokenType {
     T_CURLBRACKET_OPEN,
     T_CURLBRACKET_CLOSE,
     T_SEMICOLON,
+    T_COMMA,
+    T_SQUAREBRACKET_OPEN,
+    T_SQUAREBRACKET_CLOSE,
     T_IDENTIFIER,
     T_NUMBER_LITERAL,
     T_STR_LITERAL,
@@ -40,6 +43,8 @@ public enum TokenType {
     T_KW_WHILE,
     T_KW_TRUE,
     T_KW_FALSE,
+    T_KW_VOID,
+    T_KW_RETURN,
     T_EOT,
     T_UNKNOWN;
 
