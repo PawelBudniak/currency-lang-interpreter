@@ -354,7 +354,6 @@ public class Parser {
             return new BoolFactor(unaryOp, expression);
         }
 
-        // TODO: should be arithmetic expression?
         RValue simpleValue = tryParseRValue();
         if (simpleValue == null)
             return null;
@@ -364,7 +363,6 @@ public class Parser {
 
             Token operator = currentToken;
             nextToken();
-            //TODO: tu tez
             RValue rightOperand = tryParseRValue();
             if (rightOperand == null)
                 throw new SyntaxException("No second operand found after comparison operator", currentToken.getPosition());
