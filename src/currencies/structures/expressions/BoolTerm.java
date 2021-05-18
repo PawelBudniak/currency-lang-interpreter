@@ -1,5 +1,6 @@
 package currencies.structures.expressions;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class BoolTerm {
@@ -11,6 +12,12 @@ public class BoolTerm {
 
     public List<BoolFactor> getOperands() {
         return operands;
+    }
+
+    public static BoolTerm fromRValue(RValue rvalue){
+        List<BoolFactor> operand = new ArrayList<>();
+        operand.add(new BoolFactor(null, rvalue));
+        return new BoolTerm(operand);
     }
 
     @Override

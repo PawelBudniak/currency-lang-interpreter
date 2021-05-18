@@ -181,8 +181,9 @@ public class Parser {
     }
 
     RValue tryParseRValue() {
+        return tryParseBoolExpression();
 
-        return tryParseArithmeticExpression();
+//        return tryParseArithmeticExpression();
     }
 
     ArithmeticExpression tryParseArithmeticExpression() {
@@ -204,7 +205,7 @@ public class Parser {
             Token operator = currentToken;
             nextToken();
             if ((term = tryParseArithmeticTerm()) == null)
-                throw new SyntaxException("No second operand found after additive operator", currentToken.getPosition());
+                throw new SyntaxException("No second operand found after " + operator.valueStr() + "operator", currentToken.getPosition());
 
             operands.add(term);
             operators.add(operator);
@@ -231,7 +232,7 @@ public class Parser {
             Token operator = currentToken;
             nextToken();
             if ((factor = tryParseArithmeticFactor()) == null)
-                throw new SyntaxException("No second operand found after AND token", currentToken.getPosition());
+                throw new SyntaxException("No second operand found after " + operator.valueStr() + "operator", currentToken.getPosition());
 
             operands.add(factor);
             operators.add(operator);
@@ -318,6 +319,29 @@ public class Parser {
         return new BoolExpression(operands);
     }
 
+//    BoolExpression tryParseRestOfBoolExpression(RValue ex){
+//
+//        List<BoolTerm> operands = new ArrayList<>();
+//        BoolTerm term = BoolTerm.fromRValue(ex);
+//        operands.add(term);
+//
+//        if ((term = tryParseBoolTerm()) == null)
+//            return null;
+//
+//        operands.add(term);
+//
+//
+//        while ( currentToken.getType() == T_OR){
+//            nextToken();
+//            if ((term = tryParseBoolTerm()) == null)
+//                throw new SyntaxException("No second operand found after OR token", currentToken.getPosition());
+//            operands.add(term);
+//        }
+//
+//
+//        return new BoolExpression(operands);
+//    }
+
     private BoolTerm tryParseBoolTerm() {
         List<BoolFactor> operands = new ArrayList<>();
         BoolFactor factor;
@@ -354,7 +378,8 @@ public class Parser {
             return new BoolFactor(unaryOp, expression);
         }
 
-        RValue simpleValue = tryParseRValue();
+        //RValue simpleValue = tryParseRValue();
+        ArithmeticExpression simpleValue = tryParseArithmeticExpression();
         if (simpleValue == null)
             return null;
 
@@ -363,7 +388,9 @@ public class Parser {
 
             Token operator = currentToken;
             nextToken();
-            RValue rightOperand = tryParseRValue();
+            //RValue rightOperand = tryParseRValue();
+            ArithmeticExpression rightOperand = tryParseArithmeticExpression();
+
             if (rightOperand == null)
                 throw new SyntaxException("No second operand found after comparison operator", currentToken.getPosition());
 
