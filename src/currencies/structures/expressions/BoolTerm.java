@@ -3,7 +3,7 @@ package currencies.structures.expressions;
 import java.util.ArrayList;
 import java.util.List;
 
-public class BoolTerm {
+public class BoolTerm extends RValue{
     private List<BoolFactor> operands;
 
     public BoolTerm(List<BoolFactor> operands) {
@@ -20,14 +20,17 @@ public class BoolTerm {
         return new BoolTerm(operand);
     }
 
+
     @Override
     public String toString (){
-        StringBuilder str = new StringBuilder(operands.get(0).toString());
 
-        for (int i = 1; i < operands.size(); ++i){
-            str.append(" && ");
-            str.append(operands.get(i));
-        }
-        return str.toString();
+        return RValue.exprToStr(operands, "&&");
+//        StringBuilder str = new StringBuilder(operands.get(0).toString());
+//
+//        for (int i = 1; i < operands.size(); ++i){
+//            str.append(" && ");
+//            str.append(operands.get(i));
+//        }
+//        return str.toString();
     }
 }

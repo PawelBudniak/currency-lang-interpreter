@@ -17,6 +17,6 @@ public class ArithmeticTerm extends RValue {
 
     @Override
     public String toString (){
-        return ArithmeticExpression.exprToStr(operands, operators);
+        return RValue.exprToStr(operands, operators);
     }
 }

@@ -4,7 +4,7 @@ import currencies.lexer.Token;
 import currencies.lexer.TokenType;
 
 
-public class BoolFactor{
+public class BoolFactor extends RValue{
 
     Token unaryOperator;
     RValue expression;

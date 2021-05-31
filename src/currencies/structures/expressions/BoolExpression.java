@@ -16,13 +16,16 @@ public class BoolExpression extends RValue{
 
     @Override
     public String toString (){
-        StringBuilder str = new StringBuilder(operands.get(0).toString());
 
-        for (int i = 1; i < operands.size(); ++i){
-            str.append(" || ");
-            str.append(operands.get(i));
-        }
-        return str.toString();
+        return exprToStr(operands, "||");
+
+//        StringBuilder str = new StringBuilder(operands.get(0).toString());
+//
+//        for (int i = 1; i < operands.size(); ++i){
+//            str.append(" || ");
+//            str.append(operands.get(i));
+//        }
+//        return str.toString();
     }
 
     public RValue getFirstOperand(){

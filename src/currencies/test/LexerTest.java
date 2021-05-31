@@ -26,7 +26,7 @@ class LexerTest {
         Lexer l = lexerFromStringStream("#hello 32\nvar");
 
         assertAll(
-                "Comments end after a newline and are ignored by the lexer",
+                "Comments should end after a newline and be ignored by lexer",
                 ()-> assertEquals(TokenType.T_IDENTIFIER, l.getNextToken().getType()),
                 ()->assertEquals("var", l.currentToken().getValue())
         );
@@ -36,7 +36,7 @@ class LexerTest {
     void currentTokenBeforeFirstNextToken(){
         Lexer l = lexerFromStringStream("aa");
 
-        assertNull(l.currentToken(),"A call to current token before any nextToken() calls returns null");
+        assertNull(l.currentToken(),"A call to current token before any nextToken() calls should return null");
     }
 
     @Test

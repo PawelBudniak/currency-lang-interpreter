@@ -112,6 +112,15 @@ class ParserTest {
     }
 
     @Test
+    void boolExpressionWithParenthesesInArithmetic(){
+        String expr = "(a + b) * 4 > 3 || 5 * 2 <= 4 && !(var > foo)";
+        Parser p = parserFromStringStream(expr);
+        p.nextToken();
+
+        assertEquals(expr, p.tryParseBoolExpression().toString());
+    }
+
+    @Test
     void currencyLiteral(){
         Parser p = parserFromStringStream("10.42 pln");
         p.nextToken();
@@ -290,7 +299,7 @@ class ParserTest {
 
     @Test
     void ComplexBoolExprAsRValue(){
-        String str = "bool a = x == 3 || b > 2 && a + 3 > 2;";
+        String str = "bool a = x == 3 || b > 2 && a + fun(6) > 2;";
         Parser p = parserFromStringStream(str);
         p.nextToken();
 
@@ -300,6 +309,23 @@ class ParserTest {
                 () -> assertEquals(str, value.toString()),
                 () -> assertTrue(value.getValue() instanceof BoolExpression),
                 () -> assertTrue( ((BoolExpression)(value.getValue())).getOperands().size() == 2)
+        );
+
+    }
+
+    @Test
+    void ComplexBoolExprAsRValue2(){
+        String str = "abc = (3 + 2) * 3 >= 10;";
+        String parenthesized = "abc = (((3 + 2) * 3) >= 10);";
+        Parser p = parserFromStringStream(str);
+        p.nextToken();
+
+        Assignment value = (Assignment)p.tryParseAssignOrFunCall();
+
+        assertAll(
+                () -> assertEquals(parenthesized, value.toString()),
+                () -> assertTrue(value.getValue() instanceof BoolExpression),
+                () -> assertTrue( ((BoolExpression)(value.getValue())).getOperands().size() == 1)
         );
 
     }

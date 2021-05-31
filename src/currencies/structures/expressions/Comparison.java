@@ -15,6 +15,6 @@ public class Comparison extends RValue {
 
     @Override
     public String toString() {
-        return rightOperand + " " + operator.getValue() + " " + leftOperand;
+        return "(" + rightOperand + " " + operator.getValue() + " " + leftOperand + ")";
     }
 }

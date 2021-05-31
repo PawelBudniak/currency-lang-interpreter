@@ -14,16 +14,6 @@ public class ArithmeticExpression extends RValue {
         this.operators = operators;
     }
 
-    static String exprToStr(List<? extends RValue> operands, List<Token> operators){
-        StringBuilder str = new StringBuilder(operands.get(0).toString());
-
-        for (int i = 1; i < operands.size(); ++i){
-            str.append(" ").append(operators.get(i - 1).valueStr()).append(" ");
-            str.append(operands.get(i));
-        }
-        return str.toString();
-    }
-
 
     @Override
     public String toString () {

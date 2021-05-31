@@ -247,9 +247,12 @@ public class Parser {
 
         if (currentToken.getType() == T_PAREN_OPEN){
             nextToken();
-            ArithmeticExpression expression = tryParseArithmeticExpression();
+            //ArithmeticExpression expression = tryParseArithmeticExpression();
+            BoolExpression expression = tryParseBoolExpression();
             if (expression == null)
                 throw new SyntaxException("No expression found in parentheses", currentToken.getPosition());
+
+            System.out.println("Taki expr: " + expression);
             requireThenNextToken(T_PAREN_CLOSE);
             return new ArithmeticFactor(unaryOp, expression);
         }
@@ -296,7 +299,6 @@ public class Parser {
         return new IfStatement(condition, block);
     }
 
-    // TODO: na razie zakładam, że moze wystapic tylko w ifie i while, tzn nie da się uzywac jako rvalue
     BoolExpression tryParseBoolExpression() {
 
         List<BoolTerm> operands = new ArrayList<>();
@@ -368,6 +370,10 @@ public class Parser {
 
         Token unaryOp = tryParseUnaryOp();
 
+        //RValue simpleValue = tryParseRValue();
+        ArithmeticExpression simpleValue = tryParseArithmeticExpression();
+        if (simpleValue == null)
+            return null;
 
         if (currentToken.getType() == T_PAREN_OPEN){
             nextToken();
@@ -377,11 +383,6 @@ public class Parser {
             requireThenNextToken(T_PAREN_CLOSE);
             return new BoolFactor(unaryOp, expression);
         }
-
-        //RValue simpleValue = tryParseRValue();
-        ArithmeticExpression simpleValue = tryParseArithmeticExpression();
-        if (simpleValue == null)
-            return null;
 
 
         if (comparisonOperators.contains(currentToken.getType())){
