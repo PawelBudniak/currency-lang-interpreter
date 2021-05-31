@@ -186,22 +186,23 @@ public class Parser {
 //        return tryParseArithmeticExpression();
     }
 
-    ArithmeticExpression tryParseArithmeticExpression() {
+    RValue tryParseArithmeticExpression() {
 
 
 
-        List<ArithmeticTerm> operands = new ArrayList<>();
+        List<RValue> operands = new ArrayList<>();
         List<Token> operators = new ArrayList<>();
-        ArithmeticTerm term;
+        RValue firstTerm;
 
-        if ((term = tryParseArithmeticTerm()) == null)
+        if ((firstTerm = tryParseArithmeticTerm()) == null)
             return null;
 
-        operands.add(term);
+        operands.add(firstTerm);
 
 
         while ( currentToken.getType() == T_PLUS ||
                 currentToken.getType() == T_MINUS){
+            RValue term;
             Token operator = currentToken;
             nextToken();
             if ((term = tryParseArithmeticTerm()) == null)
@@ -211,24 +212,28 @@ public class Parser {
             operators.add(operator);
         }
 
+        if (operands.size() == 1)
+            return firstTerm;
 
         return new ArithmeticExpression(operands, operators);
 
     }
 
-    private ArithmeticTerm tryParseArithmeticTerm() {
+    private RValue tryParseArithmeticTerm() {
 
-        List<ArithmeticFactor> operands = new ArrayList<>();
+        List<RValue> operands = new ArrayList<>();
         List<Token> operators = new ArrayList<>();
-        ArithmeticFactor factor;
+        RValue firstFactor;
 
-        if ((factor = tryParseArithmeticFactor()) == null)
+        if ((firstFactor = tryParseArithmeticFactor()) == null)
             return null;
 
-        operands.add(factor);
+        operands.add(firstFactor);
 
         while ( currentToken.getType() == T_MULT ||
                 currentToken.getType() == T_DIV){
+
+            RValue factor;
             Token operator = currentToken;
             nextToken();
             if ((factor = tryParseArithmeticFactor()) == null)
@@ -238,29 +243,31 @@ public class Parser {
             operators.add(operator);
         }
 
+        if (operands.size() == 1)
+            return firstFactor;
 
         return new ArithmeticTerm(operands, operators);
     }
 
-    private ArithmeticFactor tryParseArithmeticFactor() {
+    private RValue tryParseArithmeticFactor() {
         Token unaryOp = tryParseUnaryOp();
 
         if (currentToken.getType() == T_PAREN_OPEN){
             nextToken();
             //ArithmeticExpression expression = tryParseArithmeticExpression();
-            BoolExpression expression = tryParseBoolExpression();
+            RValue expression = tryParseBoolExpression();
             if (expression == null)
                 throw new SyntaxException("No expression found in parentheses", currentToken.getPosition());
 
             System.out.println("Taki expr: " + expression);
             requireThenNextToken(T_PAREN_CLOSE);
-            return new ArithmeticFactor(unaryOp, expression);
+            return ArithmeticFactor.factorOrRValue(unaryOp, expression);
         }
 
         RValue simpleValue = tryParseSimpleValue();
         if (simpleValue == null)
             return null;
-        return new ArithmeticFactor(unaryOp, simpleValue);
+        return ArithmeticFactor.factorOrRValue(unaryOp, simpleValue);
 
     }
 
@@ -288,7 +295,7 @@ public class Parser {
         nextTokenThenRequire(T_PAREN_OPEN);
 
         nextToken();
-        BoolExpression condition = tryParseBoolExpression();
+        RValue condition = tryParseBoolExpression();
         if (condition == null)
             throw new SyntaxException("No condition found for if statement", currentToken.getPosition());
 
@@ -299,90 +306,74 @@ public class Parser {
         return new IfStatement(condition, block);
     }
 
-    BoolExpression tryParseBoolExpression() {
+    RValue tryParseBoolExpression() {
 
-        List<BoolTerm> operands = new ArrayList<>();
-        BoolTerm term;
+        List<RValue> operands = new ArrayList<>();
+        RValue firstTerm;
 
-        if ((term = tryParseBoolTerm()) == null)
+        if ((firstTerm = tryParseBoolTerm()) == null)
             return null;
 
-        operands.add(term);
+        operands.add(firstTerm);
 
 
         while ( currentToken.getType() == T_OR){
+            RValue term;
             nextToken();
             if ((term = tryParseBoolTerm()) == null)
                 throw new SyntaxException("No second operand found after OR token", currentToken.getPosition());
             operands.add(term);
         }
 
+        if (operands.size() == 1)
+            return firstTerm;
 
         return new BoolExpression(operands);
     }
 
-//    BoolExpression tryParseRestOfBoolExpression(RValue ex){
-//
-//        List<BoolTerm> operands = new ArrayList<>();
-//        BoolTerm term = BoolTerm.fromRValue(ex);
-//        operands.add(term);
-//
-//        if ((term = tryParseBoolTerm()) == null)
-//            return null;
-//
-//        operands.add(term);
-//
-//
-//        while ( currentToken.getType() == T_OR){
-//            nextToken();
-//            if ((term = tryParseBoolTerm()) == null)
-//                throw new SyntaxException("No second operand found after OR token", currentToken.getPosition());
-//            operands.add(term);
-//        }
-//
-//
-//        return new BoolExpression(operands);
-//    }
 
-    private BoolTerm tryParseBoolTerm() {
-        List<BoolFactor> operands = new ArrayList<>();
-        BoolFactor factor;
+    private RValue tryParseBoolTerm() {
+        List<RValue> operands = new ArrayList<>();
+        RValue firstFactor;
 
-        if ((factor = tryParseBoolFactor()) == null)
+        if ((firstFactor = tryParseBoolFactor()) == null)
             return null;
 
-        operands.add(factor);
+        operands.add(firstFactor);
 
 
         while ( currentToken.getType() == T_AND){
+            RValue factor;
             nextToken();
             if ((factor = tryParseBoolFactor()) == null)
                 throw new SyntaxException("No second operand found after AND token", currentToken.getPosition());
             operands.add(factor);
         }
 
+        if (operands.size() == 1)
+            return firstFactor;
 
         return new BoolTerm(operands);
 
     }
 
-    private BoolFactor tryParseBoolFactor() {
+    private RValue tryParseBoolFactor() {
 
         Token unaryOp = tryParseUnaryOp();
 
         //RValue simpleValue = tryParseRValue();
-        ArithmeticExpression simpleValue = tryParseArithmeticExpression();
+        RValue simpleValue = tryParseArithmeticExpression();
         if (simpleValue == null)
             return null;
 
         if (currentToken.getType() == T_PAREN_OPEN){
             assert false;
             nextToken();
-            BoolExpression expression = tryParseBoolExpression();
+            RValue expression = tryParseBoolExpression();
             if (expression == null)
                 throw new SyntaxException("No expression found in parentheses", currentToken.getPosition());
             requireThenNextToken(T_PAREN_CLOSE);
-            return new BoolFactor(unaryOp, expression);
+            return  BoolFactor.factorOrRValue(unaryOp, expression);
         }
 
 
@@ -391,15 +382,15 @@ public class Parser {
             Token operator = currentToken;
             nextToken();
             //RValue rightOperand = tryParseRValue();
-            ArithmeticExpression rightOperand = tryParseArithmeticExpression();
+            RValue rightOperand = tryParseArithmeticExpression();
 
             if (rightOperand == null)
                 throw new SyntaxException("No second operand found after comparison operator", currentToken.getPosition());
 
-            return new BoolFactor(unaryOp, new Comparison(simpleValue, operator, rightOperand));
+            return  BoolFactor.factorOrRValue(unaryOp, new Comparison(simpleValue, operator, rightOperand));
         }
 
-        return new BoolFactor(unaryOp, simpleValue);
+        return  BoolFactor.factorOrRValue(unaryOp, simpleValue);
 
 
     }
@@ -497,7 +488,7 @@ public class Parser {
         nextTokenThenRequire(T_PAREN_OPEN);
 
         nextToken();
-        BoolExpression condition = tryParseBoolExpression();
+        RValue condition = tryParseBoolExpression();
         if (condition == null)
             throw new SyntaxException("No condition found for while statement", currentToken.getPosition());
 

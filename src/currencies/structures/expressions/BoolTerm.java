@@ -4,21 +4,21 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class BoolTerm extends RValue{
-    private List<BoolFactor> operands;
+    private List<RValue> operands;
 
-    public BoolTerm(List<BoolFactor> operands) {
+    public BoolTerm(List<RValue> operands) {
         this.operands = operands;
     }
 
-    public List<BoolFactor> getOperands() {
+    public List<RValue> getOperands() {
         return operands;
     }
 
-    public static BoolTerm fromRValue(RValue rvalue){
-        List<BoolFactor> operand = new ArrayList<>();
-        operand.add(new BoolFactor(null, rvalue));
-        return new BoolTerm(operand);
-    }
+//    public static BoolTerm fromRValue(RValue rvalue){
+//        List<BoolFactor> operand = new ArrayList<>();
+//        operand.add(new BoolFactor(null, rvalue));
+//        return new BoolTerm(operand);
+//    }
 
 
     @Override

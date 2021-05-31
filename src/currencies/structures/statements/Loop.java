@@ -2,17 +2,18 @@ package currencies.structures.statements;
 
 import currencies.structures.Block;
 import currencies.structures.expressions.BoolExpression;
+import currencies.structures.expressions.RValue;
 
 public class Loop implements Statement {
-    private BoolExpression condition;
+    private RValue condition;
     private Block block;
 
-    public Loop(BoolExpression condition, Block block) {
+    public Loop(RValue condition, Block block) {
         this.condition = condition;
         this.block = block;
     }
 
-    public BoolExpression getCondition() {
+    public RValue getCondition() {
         return condition;
     }
 

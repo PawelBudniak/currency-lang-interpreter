@@ -3,14 +3,14 @@ package currencies.structures.expressions;
 import java.util.List;
 
 public class BoolExpression extends RValue{
-    private List<BoolTerm> operands;
+    private List<RValue> operands;
     private boolean value;
 
-    public BoolExpression(List<BoolTerm> operands) {
+    public BoolExpression(List<RValue> operands) {
         this.operands = operands;
     }
 
-    public List<BoolTerm> getOperands() {
+    public List<RValue> getOperands() {
         return operands;
     }
 
@@ -29,6 +29,6 @@ public class BoolExpression extends RValue{
     }
 
     public RValue getFirstOperand(){
-        return operands.get(0).getOperands().get(0).getExpression();
+        return operands.get(0);
     }
 }

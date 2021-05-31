@@ -11,6 +11,12 @@ public class ArithmeticFactor extends RValue {
         this.unaryOp = unaryOp;
     }
 
+    public static RValue factorOrRValue(Token unaryOperator, RValue expression){
+        if (unaryOperator == null)
+            return expression;
+        return new ArithmeticFactor(unaryOperator, expression);
+    }
+
     @Override
     public String toString() {
         String str = "";

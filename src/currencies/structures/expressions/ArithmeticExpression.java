@@ -5,11 +5,11 @@ import currencies.lexer.Token;
 import java.util.List;
 
 public class ArithmeticExpression extends RValue {
-    private List<ArithmeticTerm> operands;
+    private List<RValue> operands;
     private List<Token> operators;
     private Object value;
 
-    public ArithmeticExpression(List<ArithmeticTerm> operands, List<Token> operators) {
+    public ArithmeticExpression(List<RValue> operands, List<Token> operators) {
         this.operands = operands;
         this.operators = operators;
     }

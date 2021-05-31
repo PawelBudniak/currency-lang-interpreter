@@ -9,9 +9,15 @@ public class BoolFactor extends RValue{
     Token unaryOperator;
     RValue expression;
 
-    public BoolFactor(Token unaryOperator, RValue expression) {
+    private BoolFactor(Token unaryOperator, RValue expression) {
         this.unaryOperator = unaryOperator;
         this.expression = expression;
+    }
+
+    public static RValue factorOrRValue(Token unaryOperator, RValue expression){
+        if (unaryOperator == null)
+            return expression;
+        return new BoolFactor(unaryOperator, expression);
     }
 
     public Token getUnaryOperator() {

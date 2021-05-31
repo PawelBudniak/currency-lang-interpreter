@@ -1,16 +1,12 @@
 package currencies.parser;
 
-import currencies.NumberFactory;
 import currencies.lexer.Lexer;
 import currencies.lexer.Token;
-import currencies.lexer.TokenType;
 import currencies.reader.CodeInputStream;
 import currencies.structures.Function;
 import currencies.structures.Program;
 import currencies.structures.TypeAndId;
-import currencies.structures.expressions.BoolExpression;
-import currencies.structures.expressions.Comparison;
-import currencies.structures.expressions.RValue;
+import currencies.structures.expressions.*;
 import currencies.structures.simple_values.FunctionCall;
 import currencies.structures.simple_values.Literal;
 import currencies.structures.statements.*;
@@ -24,6 +20,7 @@ import currencies.Currency;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class ParserTest {
 
@@ -364,8 +361,7 @@ class ParserTest {
 
         assertAll(
                 () -> assertEquals(parenthesized, assignment.toString()),
-                () -> assertTrue(assignment.getValue() instanceof BoolExpression),
-                () -> assertTrue( ((BoolExpression)(assignment.getValue())).getOperands().size() == 1)
+                () -> assertTrue(assignment.getValue() instanceof Comparison)
         );
 
     }
@@ -382,6 +378,43 @@ class ParserTest {
 
         assertEquals(parenthesized, assignment.toString());
 
+    }
+
+    @Test
+    void avoidExpressionNestingWhenOnlyOneOperand(){
+        String str = "5";
+        Parser p = parserFromStringStream(str);
+        p.nextToken();
+
+        RValue val = p.tryParseRValue();
+
+        assertTrue(val instanceof Literal);
+    }
+
+    @Test
+    void avoidExpressionNestingWhenOnlyOneOperand2(){
+        String str = "5 * 3";
+        Parser p = parserFromStringStream(str);
+        p.nextToken();
+
+        RValue val = p.tryParseRValue();
+
+        assertTrue(val instanceof ArithmeticTerm);
+    }
+
+    @Test
+    void boolUnaryOp(){
+        String str = "!(a || b && c)";
+        Parser p = parserFromStringStream(str);
+        p.nextToken();
+
+        RValue val = p.tryParseRValue();
+
+        assertAll(
+                () -> assertTrue(val instanceof BoolFactor),
+                () -> assertTrue(((BoolFactor)val).getUnaryOperator().getType() == T_EXCLAMATION),
+                () -> assertTrue(((BoolFactor)val).getExpression() instanceof BoolExpression)
+        );
     }
 
 
