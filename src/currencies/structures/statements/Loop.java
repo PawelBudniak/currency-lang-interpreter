@@ -12,6 +12,14 @@ public class Loop implements Statement {
         this.block = block;
     }
 
+    public BoolExpression getCondition() {
+        return condition;
+    }
+
+    public Block getBlock() {
+        return block;
+    }
+
     @Override
     public String toString() {
         return "while (" +condition + ") " + block;

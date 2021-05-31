@@ -376,6 +376,7 @@ public class Parser {
             return null;
 
         if (currentToken.getType() == T_PAREN_OPEN){
+            assert false;
             nextToken();
             BoolExpression expression = tryParseBoolExpression();
             if (expression == null)
@@ -489,7 +490,7 @@ public class Parser {
         return null;
     }
 
-    Statement tryParseLoop(){
+    Loop tryParseLoop(){
         if(currentToken.getType() != T_KW_WHILE)
             return null;
 
