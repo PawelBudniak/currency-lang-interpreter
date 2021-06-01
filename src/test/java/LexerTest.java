@@ -1,5 +1,3 @@
-package currencies.test;
-
 import currencies.Currency;
 import currencies.NumberFactory;
 import currencies.lexer.Lexer;
@@ -15,6 +13,11 @@ import java.nio.charset.StandardCharsets;
 import static org.junit.jupiter.api.Assertions.*;
 
 class LexerTest {
+
+    @BeforeAll
+    static void loadCurrencies(){
+        Currency.loadExchangeRates("data/exchangeRates.json");
+    }
 
     Lexer lexerFromStringStream(String s){
         InputStream stream = new ByteArrayInputStream(s.getBytes(StandardCharsets.UTF_8));
@@ -98,13 +101,16 @@ class LexerTest {
     }
 
     @Test
-    void doubleDecimalNumberIsIncorrect(){
+    void doubleDecimalNumberIsIncorrect() {
         Lexer l = lexerFromStringStream("69.69.69");
 
-        assertAll(
-                ()-> assertEquals(TokenType.T_UNKNOWN, l.getNextToken().getType(),
-                        "A number with 2 decimal points is an unkown token")
-        );
+        assertThrows(currencies.lexer.LexerException.class, () -> l.getNextToken());
+    }
+
+    @Test
+    void stringQuotesMustBeClosed(){
+        Lexer l = lexerFromStringStream("'incomplete string 43 a = 5");
+        assertThrows(currencies.lexer.LexerException.class, () -> l.getNextToken());
     }
 
     @Test
@@ -166,7 +172,7 @@ class LexerTest {
         assertAll(
                 "Currency codes are recognized",
                 ()-> assertEquals(TokenType.T_CURRENCY_CODE, l.getNextToken().getType()),
-                ()-> assertEquals(Currency.Type.PLN, l.currentToken().getValue())
+                ()-> assertEquals("pln", l.currentToken().getValue())
         );
     }
 
@@ -308,7 +314,7 @@ class LexerTest {
         void currency_gbp(){
             assertAll(
                     () -> assertEquals(TokenType.T_CURRENCY_CODE, t.getType()),
-                    () -> assertEquals(Currency.Type.GBP, t.getValue())
+                    () -> assertEquals("gbp", t.getValue())
             );
         }
         @Test @Order(4)
@@ -319,7 +325,7 @@ class LexerTest {
         void currency_pln(){
             assertAll(
                     () -> assertEquals(TokenType.T_CURRENCY_CODE, t.getType()),
-                    () -> assertEquals(Currency.Type.PLN, t.getValue())
+                    () -> assertEquals("pln", t.getValue())
             );
         }
         @Test @Order(6)

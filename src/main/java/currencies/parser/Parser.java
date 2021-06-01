@@ -26,13 +26,13 @@ public class Parser {
 
     public Parser(Lexer lexer) {
         this.lexer = lexer;
+        nextToken();
     }
 
     public Program parseProgram(){
         List<Function> functions = new ArrayList<>();
         Function function;
 
-        nextToken();
         while ( (function = tryParseFunction()) != null)
             functions.add(function);
 
@@ -78,7 +78,7 @@ public class Parser {
 
 
 
-    Function tryParseFunction(){
+    public Function tryParseFunction(){
 
         if (currentToken.getType() == T_EOT)
             return null;
@@ -102,7 +102,7 @@ public class Parser {
         return new Function(returnType, name, args, block);
     }
 
-    Block parseBlock(){
+    public Block parseBlock(){
         List<Statement> statements = new ArrayList<>();
 
         require(T_CURLBRACKET_OPEN);
@@ -128,7 +128,7 @@ public class Parser {
         return Arrays.asList(arr).contains(item);
     }
 
-    private List<TypeAndId> parseArgDefList() {
+    public  List<TypeAndId> parseArgDefList() {
         List<TypeAndId> args = new ArrayList<>();
         TypeAndId arg;
 
@@ -145,7 +145,7 @@ public class Parser {
         return args;
     }
 
-    private TypeAndId tryParseTypeAndId(){
+    public  TypeAndId tryParseTypeAndId(){
         if (!arrContains(typeSpecifiers, currentToken.getType()))
             return null;
         else{
@@ -157,17 +157,17 @@ public class Parser {
         }
     }
 
-    ExchangeDeclaration tryParseExchangeDeclaration(){
+    public ExchangeDeclaration tryParseExchangeDeclaration(){
         if (currentToken.getType() != T_KW_EXCHANGE)
             return null;
 
         nextTokenThenRequire(T_KW_FROM);
         nextTokenThenRequire(T_CURRENCY_CODE);
-        Currency.Type fromCurrency = (Currency.Type)currentToken.getValue();
+        String fromCurrency = (String) currentToken.getValue();
 
         nextTokenThenRequire(T_KW_TO);
         nextTokenThenRequire(T_CURRENCY_CODE);
-        Currency.Type toCurrency = (Currency.Type)currentToken.getValue();
+        String toCurrency = (String) currentToken.getValue();
         nextToken();
 
         RValue value = tryParseRValue();
@@ -180,15 +180,11 @@ public class Parser {
         return new ExchangeDeclaration(fromCurrency, toCurrency, value);
     }
 
-    RValue tryParseRValue() {
+    public RValue tryParseRValue() {
         return tryParseBoolExpression();
-
-//        return tryParseArithmeticExpression();
     }
 
-    RValue tryParseArithmeticExpression() {
-
-
+    public RValue tryParseArithmeticExpression() {
 
         List<RValue> operands = new ArrayList<>();
         List<Token> operators = new ArrayList<>();
@@ -219,7 +215,7 @@ public class Parser {
 
     }
 
-    private RValue tryParseArithmeticTerm() {
+    public  RValue tryParseArithmeticTerm() {
 
         List<RValue> operands = new ArrayList<>();
         List<Token> operators = new ArrayList<>();
@@ -249,7 +245,7 @@ public class Parser {
         return new ArithmeticTerm(operands, operators);
     }
 
-    private RValue tryParseArithmeticFactor() {
+    public  RValue tryParseArithmeticFactor() {
         Token unaryOp = tryParseUnaryOp();
 
         if (currentToken.getType() == T_PAREN_OPEN){
@@ -274,7 +270,7 @@ public class Parser {
 
 
 
-    ReturnStatement tryParseReturnStatement() {
+    public ReturnStatement tryParseReturnStatement() {
         if (currentToken.getType() != T_KW_RETURN)
             return null;
 
@@ -288,7 +284,7 @@ public class Parser {
 
     }
 
-    IfStatement tryParseIfStatement(){
+    public IfStatement tryParseIfStatement(){
         if(currentToken.getType() != T_KW_IF)
             return null;
 
@@ -306,7 +302,7 @@ public class Parser {
         return new IfStatement(condition, block);
     }
 
-    RValue tryParseBoolExpression() {
+    public RValue tryParseBoolExpression() {
 
         List<RValue> operands = new ArrayList<>();
         RValue firstTerm;
@@ -332,7 +328,7 @@ public class Parser {
     }
 
 
-    private RValue tryParseBoolTerm() {
+    public  RValue tryParseBoolTerm() {
         List<RValue> operands = new ArrayList<>();
         RValue firstFactor;
 
@@ -357,7 +353,7 @@ public class Parser {
 
     }
 
-    private RValue tryParseBoolFactor() {
+    public RValue tryParseBoolFactor() {
 
         Token unaryOp = tryParseUnaryOp();
 
@@ -395,7 +391,7 @@ public class Parser {
 
     }
 
-    private RValue tryParseSimpleValue() {
+    public  RValue tryParseSimpleValue() {
 
         if (currentToken.getType() == T_IDENTIFIER){
             String name = (String) currentToken.getValue();
@@ -414,7 +410,7 @@ public class Parser {
         return null;
     }
 
-    Literal tryParseLiteral() {
+    public Literal tryParseLiteral() {
 
         if (currentToken.getType() == T_STR_LITERAL) {
             String strLiteral = (String) currentToken.getValue();
@@ -428,7 +424,7 @@ public class Parser {
             Number value = (Number) currentToken.getValue();
             nextToken();
             if (currentToken.getType() == T_CURRENCY_CODE) {
-                Currency currencyLiteral = new Currency(value, (Currency.Type) currentToken.getValue());
+                Currency currencyLiteral = new Currency(value, (String) currentToken.getValue());
                 nextToken();
                 return new Literal(currencyLiteral, T_KW_CURRENCY);
             }
@@ -438,7 +434,7 @@ public class Parser {
     }
 
     // assumes the function id has already been parsed
-    private FunctionCall tryParseRestOfFunctionCall(String name) {
+    public  FunctionCall tryParseRestOfFunctionCall(String name) {
         if (currentToken.getType() != T_PAREN_OPEN)
             return null;
         nextToken();
@@ -463,7 +459,7 @@ public class Parser {
     }
 
 
-    private Token tryParseUnaryOp(){
+    public  Token tryParseUnaryOp(){
         if (currentToken.getType() == T_MINUS ||
                 currentToken.getType() == T_EXCLAMATION){
             Token op = currentToken;
@@ -481,7 +477,7 @@ public class Parser {
         return null;
     }
 
-    Loop tryParseLoop(){
+    public Loop tryParseLoop(){
         if(currentToken.getType() != T_KW_WHILE)
             return null;
 
@@ -499,7 +495,7 @@ public class Parser {
         return new Loop(condition, block);
     }
 
-    Statement tryParseAssignOrFunCall() {
+    public Statement tryParseAssignOrFunCall() {
 
         // expect var declaration and initialization (e.g. int x = 3;)
         if (arrContains(typeSpecifiers, currentToken.getType())){
@@ -536,7 +532,7 @@ public class Parser {
 
     }
 
-    Assignment tryParseRestOfAssign(Token varType, String varName){
+    public Assignment tryParseRestOfAssign(Token varType, String varName){
         if (currentToken.getType() != T_ASSIGNMENT)
             return null;
         nextToken();
@@ -548,7 +544,7 @@ public class Parser {
         return new Assignment(varType, new Variable(varName), value);
     }
 
-    Assignment tryParseRestOfAssign(String varName){
+    public Assignment tryParseRestOfAssign(String varName){
         return tryParseRestOfAssign(null, varName);
     }
 

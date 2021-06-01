@@ -68,9 +68,8 @@ public class Lexer {
             if (keyword != null)
                 return new Token(keyword, token.getValue(), position);
 
-            Currency.Type code = currencyCodes.get(token.getValue());
-            if (code != null)
-                return new Token(TokenType.T_CURRENCY_CODE, code, position);
+            if (Currency.allCodes().contains(token.getValue()))
+                return new Token(TokenType.T_CURRENCY_CODE, token.getValue(), position);
 
             return token;
         }
@@ -82,7 +81,7 @@ public class Lexer {
         if (token != null) return token;
 
         current = nextChar();
-        return new Token(TokenType.T_UNKNOWN,  position);
+        throw new LexerException("Cannot recognize token", position);
 
     }
 
@@ -178,7 +177,7 @@ public class Lexer {
             do {
                 if (current == '.') {
                     if (seenDecimalPoint)
-                        return new Token(TokenType.T_UNKNOWN, "Multiple decimal points in a number", position);
+                        throw new LexerException("Multiple decimal points in a number", position);
                     seenDecimalPoint = true;
                 }
 
@@ -238,7 +237,7 @@ public class Lexer {
                 return new Token(TokenType.T_STR_LITERAL, literal.toString(), position);
             }
             if (isEOT()){
-                return new Token(TokenType.T_UNKNOWN, "EOF reached before str closing quotation mark", position);
+                throw new LexerException("EOF reached before str closing quotation mark", position);
             }
         }
         return null;
@@ -246,7 +245,7 @@ public class Lexer {
 
     private boolean isLegalIter(int nIter){
         if (nIter > MAX_ITER)
-            throw new TooLongTokenException("Max token length is" + MAX_ITER, source.getPosition());
+            throw new LexerException("Token too long. Max token length is" + MAX_ITER, source.getPosition());
 
         return !isEOT();
     }
@@ -269,9 +268,9 @@ public class Lexer {
             entry(']', TokenType.T_SQUAREBRACKET_CLOSE)
     );
 
-    private static Map<String, Currency.Type> currencyCodes = Arrays.stream(Currency.Type.values())
-            .collect(Collectors.toMap(value -> value.toString().toLowerCase(),
-                                      value -> value));
+//    private static Map<String, Currency.Type> currencyCodes = Arrays.stream(Currency.Type.values())
+//            .collect(Collectors.toMap(value -> value.toString().toLowerCase(),
+//                                      value -> value));
 
 
     // get keyword strings from token enum values that start with "T_KW_"

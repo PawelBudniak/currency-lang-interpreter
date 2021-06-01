@@ -1,25 +1,24 @@
 package currencies.structures.statements;
 
-import currencies.Currency;
 import currencies.structures.expressions.RValue;
 
 public class ExchangeDeclaration implements Statement {
 
-    Currency.Type from;
-    Currency.Type to;
+    String from;
+    String to;
     RValue value;
 
-    public ExchangeDeclaration(Currency.Type from, Currency.Type to, RValue value) {
+    public ExchangeDeclaration(String from, String to, RValue value) {
         this.from = from;
         this.to = to;
         this.value = value;
     }
 
-    public Currency.Type getFrom() {
+    public String getFrom() {
         return from;
     }
 
-    public Currency.Type getTo() {
+    public String getTo() {
         return to;
     }
 

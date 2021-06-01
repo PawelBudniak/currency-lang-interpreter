@@ -6,7 +6,6 @@ import com.google.gson.GsonBuilder;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.Reader;
-import java.math.BigDecimal;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -14,20 +13,16 @@ public class Currency {
     public static final int CODE_LEN = 3;
 
     private Number value;
-    private Type type;
+    private String code;
 
-    public Currency(String strvalue, Type type) {
-        this.value = valueOf(strvalue);
-        this.type = type;
+    public Currency(String strvalue, String code) {
+        this.value = NumberFactory.get(strvalue);
+        this.code = code;
     }
 
-    public Currency(Number value, Type type) {
+    public Currency(Number value, String code) {
         this.value = value;
-        this.type = type;
-    }
-
-    public static Number valueOf(String strvalue){
-        return NumberFactory.get(strvalue);
+        this.code = code;
     }
 
 
@@ -35,12 +30,12 @@ public class Currency {
         return value;
     }
 
-    public Type getType() {
-        return type;
+    public String getCode() {
+        return code;
     }
 
     public String getTypeStr(){
-        return type.toString().toLowerCase();
+        return code.toString().toLowerCase();
     }
 
     @Override
@@ -49,19 +44,19 @@ public class Currency {
         if (o == null || getClass() != o.getClass()) return false;
         Currency currency = (Currency) o;
         return Objects.equals(value, currency.value) &&
-                type == currency.type;
+                Objects.equals(code, currency.code);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(value, type);
+        return Objects.hash(value, code);
     }
 
     @Override
     public String toString() {
         return "Currency{" +
                 "value=" + value +
-                ", type=" + type +
+                ", type=" + code +
                 '}';
     }
 
@@ -79,9 +74,6 @@ public class Currency {
 
             // Convert JSON File to Java Object
             input = gson.fromJson(reader, input.getClass());
-
-            System.out.println(input.keySet());
-            System.out.println(input.get("PLN").get("GBP").getClass());
 
             // transform exchange rate values into objects provided by NumberFactory
             for (String currencyFrom: input.keySet()){
@@ -108,8 +100,6 @@ public class Currency {
 //                                ))
 //                    ));
 
-
-
             gson = new GsonBuilder().setPrettyPrinting().create();
             String json = gson.toJson(exchangeRates);
             System.out.println(json);
@@ -122,15 +112,8 @@ public class Currency {
 
     }
 
-    public static Set<String> getTypes (){
+    public static Set<String> allCodes (){
         return exchangeRates.keySet();
     }
 
-    public enum Type{
-        GBP,
-        EUR,
-        PLN,
-        CHP,
-        USD
-    }
 }
