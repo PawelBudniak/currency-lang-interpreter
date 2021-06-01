@@ -21,16 +21,20 @@ public class BoolTerm extends RValue{
 //    }
 
 
+//    @Override
+//    public Object getValue() {
+//        if (operands.size() == 1) {
+//            assert false: "one operand boolterm shouldn't be possible";
+//            return operands.get(0).getValue();
+//        }
+//        return operands.stream()
+//                .reduce(true, (first, second) -> Boolean.valueOf(first.getValue()) && second.getValue());
+//
+//
+//    }
+
     @Override
     public String toString (){
-
         return RValue.exprToStr(operands, "&&");
-//        StringBuilder str = new StringBuilder(operands.get(0).toString());
-//
-//        for (int i = 1; i < operands.size(); ++i){
-//            str.append(" && ");
-//            str.append(operands.get(i));
-//        }
-//        return str.toString();
     }
 }

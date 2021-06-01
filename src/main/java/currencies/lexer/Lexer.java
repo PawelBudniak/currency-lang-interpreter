@@ -1,6 +1,6 @@
 package currencies.lexer;
 
-import currencies.Currency;
+import currencies.types.CCurrency;
 import currencies.NumberFactory;
 import currencies.reader.CharPosition;
 import currencies.reader.CodeInput;
@@ -68,7 +68,7 @@ public class Lexer {
             if (keyword != null)
                 return new Token(keyword, token.getValue(), position);
 
-            if (Currency.allCodes().contains(token.getValue()))
+            if (CCurrency.allCodes().contains(token.getValue()))
                 return new Token(TokenType.T_CURRENCY_CODE, token.getValue(), position);
 
             return token;

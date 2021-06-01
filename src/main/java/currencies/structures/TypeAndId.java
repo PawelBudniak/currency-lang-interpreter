@@ -6,16 +6,20 @@ import currencies.lexer.TokenType;
 import java.util.Objects;
 
 public class TypeAndId {
-    Token type;
+    Token typeToken;
     String id;
 
-    public TypeAndId(Token type, String id) {
-        this.type = type;
+    public TypeAndId(Token typeToken, String id) {
+        this.typeToken = typeToken;
         this.id = id;
     }
 
-    public TokenType getType() {
-        return type.getType();
+    public Token getTypeToken() {
+        return typeToken;
+    }
+
+    public TokenType getType(){
+        return typeToken.getType();
     }
 
     public String getId() {
@@ -33,11 +37,11 @@ public class TypeAndId {
 
     @Override
     public int hashCode() {
-        return Objects.hash(type, id);
+        return Objects.hash(typeToken, id);
     }
 
     @Override
     public String toString() {
-        return type.valueStr() + " " + id;
+        return typeToken.valueStr() + " " + id;
     }
 }

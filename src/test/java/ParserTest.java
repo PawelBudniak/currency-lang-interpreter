@@ -11,14 +11,13 @@ import currencies.structures.simple_values.FunctionCall;
 import currencies.structures.simple_values.Literal;
 import currencies.structures.statements.*;
 import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import static currencies.lexer.TokenType.*;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
-import currencies.Currency;
+import currencies.types.CCurrency;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -28,7 +27,7 @@ class ParserTest {
 
     @BeforeAll
     static void loadCurrencies(){
-        Currency.loadExchangeRates("data/exchangeRates.json");
+        CCurrency.loadExchangeRates("data/exchangeRates.json");
     }
 
     Parser parserFromStringStream(String s){
@@ -133,7 +132,7 @@ class ParserTest {
         Parser p = parserFromStringStream("10.42 pln");
 
         Literal literal = p.tryParseLiteral();
-        assertEquals(new Currency("10.42", "pln"), literal.getValue());
+        assertEquals(new CCurrency("10.42", "pln"), literal.getValue());
 
     }
 

@@ -1,4 +1,4 @@
-import currencies.Currency;
+import currencies.types.CCurrency;
 import currencies.NumberFactory;
 import currencies.lexer.Lexer;
 import currencies.lexer.Token;
@@ -16,7 +16,7 @@ class LexerTest {
 
     @BeforeAll
     static void loadCurrencies(){
-        Currency.loadExchangeRates("data/exchangeRates.json");
+        CCurrency.loadExchangeRates("data/exchangeRates.json");
     }
 
     Lexer lexerFromStringStream(String s){

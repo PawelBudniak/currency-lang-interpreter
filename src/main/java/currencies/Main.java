@@ -1,20 +1,12 @@
 package currencies;
 
-import currencies.lexer.Lexer;
-import currencies.lexer.Token;
-import currencies.lexer.TokenType;
-import currencies.reader.CharPosition;
-import currencies.reader.FileReader;
-
-import java.io.*;
-import java.nio.charset.Charset;
+import currencies.types.CCurrency;
 
 public class Main {
 
     public static void main(String[] args) {
 
-        Currency.loadExchangeRates("data/exchangeRates.json");
-
+        CCurrency.loadExchangeRates("data/exchangeRates.json");
 
 //        try (RandomAccessFile fp = new RandomAccessFile("data/input", "rw")){
 //

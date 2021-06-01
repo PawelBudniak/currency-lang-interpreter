@@ -1,6 +1,7 @@
 package currencies.parser;
 
-import currencies.Currency;
+import currencies.types.CBoolean;
+import currencies.types.CCurrency;
 import currencies.lexer.Lexer;
 import currencies.lexer.Token;
 import currencies.lexer.TokenType;
@@ -11,7 +12,10 @@ import currencies.structures.simple_values.FunctionCall;
 import currencies.structures.simple_values.Literal;
 import currencies.structures.simple_values.Variable;
 import currencies.structures.statements.*;
+import currencies.types.CNumber;
+import currencies.types.CString;
 
+import java.math.BigDecimal;
 import java.util.*;
 import java.util.stream.Stream;
 
@@ -255,7 +259,6 @@ public class Parser {
             if (expression == null)
                 throw new SyntaxException("No expression found in parentheses", currentToken.getPosition());
 
-            System.out.println("Taki expr: " + expression);
             requireThenNextToken(T_PAREN_CLOSE);
             return ArithmeticFactor.factorOrRValue(unaryOp, expression);
         }
@@ -393,15 +396,14 @@ public class Parser {
 
     public  RValue tryParseSimpleValue() {
 
-        if (currentToken.getType() == T_IDENTIFIER){
-            String name = (String) currentToken.getValue();
-            nextToken();
+        String id = tryParseIdentifier();
+        if (id != null){
 
             FunctionCall funcall;
-            if ((funcall = tryParseRestOfFunctionCall(name)) != null)
+            if ((funcall = tryParseRestOfFunctionCall(id)) != null)
                 return funcall;
 
-            return new Variable(name);
+            return new Variable(id);
         }
 
         Literal literal;
@@ -415,20 +417,20 @@ public class Parser {
         if (currentToken.getType() == T_STR_LITERAL) {
             String strLiteral = (String) currentToken.getValue();
             nextToken();
-            return new Literal(strLiteral, T_KW_STRING);
+            return new Literal(new CString(strLiteral), T_KW_STRING);
         } else if (currentToken.getType() == T_KW_TRUE || currentToken.getType() == T_KW_FALSE) {
             Boolean value = Boolean.valueOf((String) currentToken.getValue());
             nextToken();
-            return new Literal(value, T_KW_BOOl);
+            return new Literal(new CBoolean(value), T_KW_BOOl);
         } else if (currentToken.getType() == T_NUMBER_LITERAL) {
-            Number value = (Number) currentToken.getValue();
+            BigDecimal value = (BigDecimal) currentToken.getValue();
             nextToken();
             if (currentToken.getType() == T_CURRENCY_CODE) {
-                Currency currencyLiteral = new Currency(value, (String) currentToken.getValue());
+                CCurrency currencyLiteral = new CCurrency(value, (String) currentToken.getValue());
                 nextToken();
                 return new Literal(currencyLiteral, T_KW_CURRENCY);
             }
-            return new Literal(value, T_KW_NUMBER);
+            return new Literal(new CNumber(value), T_KW_NUMBER);
         }
         return null;
     }
@@ -497,23 +499,21 @@ public class Parser {
 
     public Statement tryParseAssignOrFunCall() {
 
-        // expect var declaration and initialization (e.g. int x = 3;)
-        if (arrContains(typeSpecifiers, currentToken.getType())){
-            Token varType = currentToken;
-            nextTokenThenRequire(T_IDENTIFIER);
-            String varName = (String) currentToken.getValue();
-            nextToken();
+        // check for var declaration and initialization (e.g. int x = 3;)
+        TypeAndId typeAndId = tryParseTypeAndId();
+        if (typeAndId != null){
+            Assignment assignment = tryParseRestOfAssign(typeAndId.getTypeToken(), typeAndId.getId());
 
-            Assignment assignment = tryParseRestOfAssign(varType, varName);
             if (assignment == null)
                 throw new SyntaxException("Assignment expected after type specifier", currentToken.getPosition());
             requireThenNextToken(T_SEMICOLON);
             return assignment;
         }
 
-        if (currentToken.getType() == T_IDENTIFIER){
-            String id = (String) currentToken.getValue();
-            nextToken();
+
+        // check for assignment without declaration or a funcall
+        String id = tryParseIdentifier();
+        if (id != null){
             Statement statement;
             if ((statement = tryParseRestOfAssign(id)) != null) {
                 requireThenNextToken(T_SEMICOLON);
@@ -529,6 +529,16 @@ public class Parser {
 
         }
         return null;
+
+    }
+
+    private String tryParseIdentifier(){
+        if (currentToken.getType() != T_IDENTIFIER)
+            return null;
+
+        String id = (String) currentToken.getValue();
+        nextToken();
+        return id;
 
     }
 

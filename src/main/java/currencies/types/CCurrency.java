@@ -1,33 +1,42 @@
-package currencies;
+package currencies.types;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import currencies.NumberFactory;
 
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.Reader;
+import java.math.BigDecimal;
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class Currency {
+public class CCurrency implements Comparable<CCurrency>, CType{
     public static final int CODE_LEN = 3;
 
-    private Number value;
+    private BigDecimal value;
     private String code;
 
-    public Currency(String strvalue, String code) {
+    public CCurrency(String strvalue, String code) {
         this.value = NumberFactory.get(strvalue);
         this.code = code;
     }
 
-    public Currency(Number value, String code) {
+    public CCurrency(BigDecimal value, String code) {
         this.value = value;
         this.code = code;
     }
 
 
-    public Number getValue() {
+    @Override
+    public BigDecimal getValue() {
         return value;
+    }
+
+    /** False if 0 (any precision) */
+    @Override
+    public boolean truthValue(){
+        return value.compareTo(BigDecimal.ZERO) != 0;
     }
 
     public String getCode() {
@@ -42,7 +51,7 @@ public class Currency {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        Currency currency = (Currency) o;
+        CCurrency currency = (CCurrency) o;
         return Objects.equals(value, currency.value) &&
                 Objects.equals(code, currency.code);
     }
@@ -54,10 +63,7 @@ public class Currency {
 
     @Override
     public String toString() {
-        return "Currency{" +
-                "value=" + value +
-                ", type=" + code +
-                '}';
+        return value.toString() + code;
     }
 
 
@@ -116,4 +122,12 @@ public class Currency {
         return exchangeRates.keySet();
     }
 
+    @Override
+    public int compareTo(CCurrency other) {
+
+        if (!this.getCode().equals(other.getCode()))
+            throw new RuntimeException("Cannot compare currencies of different types, a cast is required: e.g: [pln] curr_variable");
+
+        return getValue().compareTo(other.getValue());
+    }
 }

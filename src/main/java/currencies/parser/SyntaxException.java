@@ -3,16 +3,27 @@ package currencies.parser;
 import currencies.InterpreterException;
 import currencies.reader.CharPosition;
 
-public class SyntaxException extends RuntimeException implements InterpreterException {
-    private CharPosition position;
-
-    public SyntaxException(String message, CharPosition position) {
-        super(message);
-        this.position = position;
+public class SyntaxException extends InterpreterException {
+    public SyntaxException() {
     }
 
-    @Override
-    public CharPosition getPosition() {
-        return position;
+    public SyntaxException(CharPosition position) {
+        super(position);
+    }
+
+    public SyntaxException(String message, CharPosition position) {
+        super(message, position);
+    }
+
+    public SyntaxException(String message, Throwable cause, CharPosition position) {
+        super(message, cause, position);
+    }
+
+    public SyntaxException(Throwable cause, CharPosition position) {
+        super(cause, position);
+    }
+
+    public SyntaxException(String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace, CharPosition position) {
+        super(message, cause, enableSuppression, writableStackTrace, position);
     }
 }
