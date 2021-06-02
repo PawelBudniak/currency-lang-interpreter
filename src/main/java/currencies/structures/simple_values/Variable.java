@@ -2,11 +2,12 @@ package currencies.structures.simple_values;
 
 import currencies.lexer.TokenType;
 import currencies.structures.expressions.RValue;
+import currencies.types.CType;
 
 public class Variable extends RValue {
 
     private String name;
-    private Object value;
+    private CType value;
     private TokenType type;
 
     public Variable(String name) {
@@ -18,11 +19,11 @@ public class Variable extends RValue {
         this.type = type;
     }
 
-    public Object getValue() {
+    public CType getValue() {
         return value;
     }
 
-    public void setValue(Object value) {
+    public void setValue(CType value) {
         this.value = value;
     }
 

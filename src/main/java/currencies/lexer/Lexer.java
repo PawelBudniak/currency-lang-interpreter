@@ -1,9 +1,9 @@
 package currencies.lexer;
 
 import currencies.types.CCurrency;
-import currencies.NumberFactory;
 import currencies.reader.CharPosition;
 import currencies.reader.CodeInput;
+import currencies.types.CNumber;
 
 import java.util.Arrays;
 import java.util.Map;
@@ -185,7 +185,7 @@ public class Lexer {
                 current = nextChar();
             } while((Character.isDigit(current) || current == '.') && isLegalIter(++i));
 
-            Number value = NumberFactory.get(literal.toString());
+            CNumber value = CNumber.fromStr(literal.toString());
             return new Token(TokenType.T_NUMBER_LITERAL, value, position);
 
         }

@@ -1,13 +1,31 @@
 package currencies.types;
 
+import currencies.structures.expressions.RValue;
+
 import java.util.Objects;
 
-public class CBoolean implements CType, Comparable<CBoolean> {
+public class CBoolean extends CType<CBoolean> implements Comparable<CBoolean> {
 
     private Boolean bool;
 
     public CBoolean(Boolean bool) {
         this.bool = bool;
+    }
+
+    public CBoolean or(CBoolean other){
+        return new CBoolean(bool || other.getValue());
+    }
+
+    public CBoolean or(boolean other){
+        return new CBoolean(bool || other);
+    }
+
+    public CBoolean and(CBoolean other){
+        return new CBoolean(bool && other.getValue());
+    }
+
+    public CBoolean and(boolean other){
+        return new CBoolean(bool && other);
     }
 
     @Override
@@ -26,20 +44,15 @@ public class CBoolean implements CType, Comparable<CBoolean> {
     }
 
     @Override
-    public String toString() {
-        return bool.toString();
-    }
-
-    @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         CBoolean cBoolean = (CBoolean) o;
-        return bool.equals(cBoolean.bool);
+        return Objects.equals(bool, cBoolean.bool);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(bool);
+        return Objects.hash(super.hashCode(), bool);
     }
 }

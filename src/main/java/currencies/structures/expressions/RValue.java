@@ -3,9 +3,11 @@ package currencies.structures.expressions;
 import currencies.types.CCurrency;
 import currencies.lexer.Token;
 import currencies.lexer.TokenType;
+import currencies.types.CType;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Objects;
 
 public abstract class RValue {
 
@@ -61,26 +63,27 @@ public abstract class RValue {
     }
 
     public boolean truthValue(){
-        Object value = getValue();
-
-        if (value instanceof String)
-            return ((String) value).isEmpty();
-        if (value instanceof CCurrency)
-            return ((CCurrency) value).getValue().compareTo(BigDecimal.ZERO) == 0;
-        if (value instanceof BigDecimal)
-            //TODO: change types
-            return ((BigDecimal) value).compareTo(BigDecimal.ZERO) == 0;
-        if (value instanceof Boolean)
-            return (Boolean) value;
-
-        throw new RuntimeException("Unkown type");
-
+        return getValue().truthValue();
     }
 
-    public Object getValue(){
-        return new Object();
+    public CType getValue(){
+        return new CType() {
+            @Override
+            public int compareTo(Object o) {
+                return 0;
+            }
+
+            @Override
+            public boolean truthValue() {
+                return false;
+            }
+
+            @Override
+            public Object getValue() {
+                return null;
+            }
+        };
     }
-    public TokenType getType() { return TokenType.T_UNKNOWN; }
 
     //public abstract Object getValue();
 

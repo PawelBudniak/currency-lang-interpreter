@@ -1,5 +1,8 @@
 package currencies.structures.expressions;
 
+import currencies.types.CBoolean;
+import currencies.types.CType;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -21,17 +24,25 @@ public class BoolTerm extends RValue{
 //    }
 
 
-//    @Override
-//    public Object getValue() {
-//        if (operands.size() == 1) {
-//            assert false: "one operand boolterm shouldn't be possible";
-//            return operands.get(0).getValue();
+    @Override
+    public CType getValue() {
+        if (operands.size() == 1) {
+            assert false: "one operand boolterm shouldn't be possible";
+            return operands.get(0).getValue();
+        }
+
+//
+//        boolean value = operands.get(0).truthValue() && operands.get(1).truthValue();
+//        // break early if a false value was found
+//        for (int i = 2; i < operands.size() && value; i++) {
+//            value = operands.get(i).truthValue();
 //        }
-//        return operands.stream()
-//                .reduce(true, (first, second) -> Boolean.valueOf(first.getValue()) && second.getValue());
 //
-//
-//    }
+//        return new CBoolean(value);
+
+        return operands.stream()
+                .reduce(new CBoolean(true), (currentVal, rValue) -> currentVal.and(rValue.truthValue()), CBoolean::and);
+    }
 
     @Override
     public String toString (){

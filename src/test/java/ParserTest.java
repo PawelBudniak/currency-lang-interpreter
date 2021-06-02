@@ -27,17 +27,12 @@ class ParserTest {
 
     @BeforeAll
     static void loadCurrencies(){
-        CCurrency.loadExchangeRates("data/exchangeRates.json");
-    }
-
-    Parser parserFromStringStream(String s){
-        InputStream stream = new ByteArrayInputStream(s.getBytes(StandardCharsets.UTF_8));
-        return new Parser(new Lexer(new CodeInputStream(stream)));
+        Util.loadCurrencies();
     }
 
     @Test
     void noArgsFunction() {
-        Parser p = parserFromStringStream("void fun() {}");
+        Parser p = Util.parserFromStringStream("void fun() {}");
         Function f = p.tryParseFunction();
         assertAll(
                 () -> assertEquals(T_KW_VOID, f.getReturnType()),
@@ -50,7 +45,7 @@ class ParserTest {
 
     @Test
     void functionWithArgs() {
-        Parser p = parserFromStringStream("string func(number a, currency b) {}");
+        Parser p = Util.parserFromStringStream("string func(number a, currency b) {}");
         Function f = p.tryParseFunction();
         List<TypeAndId> args = List.of(new TypeAndId(new Token(T_KW_NUMBER, null), "a"), new TypeAndId(new Token(T_KW_CURRENCY, null), "b"));
 
@@ -69,7 +64,7 @@ class ParserTest {
     void ifStatement(){
         String strStatement = "if (a > 3) { }";
         String parenthesizedCondition = "(a > 3)";
-        Parser p = parserFromStringStream(strStatement);
+        Parser p = Util.parserFromStringStream(strStatement);
 
         IfStatement statement = p.tryParseIfStatement();
 
@@ -86,7 +81,7 @@ class ParserTest {
     void loopStatement(){
         String strStatement = "while (a > 3) { }";
         String parenthesizedCondition = "(a > 3)";
-        Parser p = parserFromStringStream(strStatement);
+        Parser p = Util.parserFromStringStream(strStatement);
 
         Loop loop = p.tryParseLoop();
 
@@ -103,7 +98,7 @@ class ParserTest {
     void boolExpression(){
         String expr = "a > 3 || 5 <= 4 && !(var > foo)";
         String parenthesized = "((a > 3) || ((5 <= 4) && !(var > foo)))";
-        Parser p = parserFromStringStream(expr);
+        Parser p = Util.parserFromStringStream(expr);
 
         assertEquals(parenthesized, p.tryParseBoolExpression().toString());
     }
@@ -113,7 +108,7 @@ class ParserTest {
         String expr = "a + b > 3 || 5 * 2 <= 4 && !(var > foo)";
         String parenthesized = "(((a + b) > 3) || (((5 * 2) <= 4) && !(var > foo)))";
 
-        Parser p = parserFromStringStream(expr);
+        Parser p = Util.parserFromStringStream(expr);
 
         assertEquals(parenthesized, p.tryParseBoolExpression().toString());
     }
@@ -122,14 +117,14 @@ class ParserTest {
     void boolExpressionWithParenthesesInArithmetic(){
         String expr = "(a + b) * 4 > 3 || 5 * 2 <= 4 && !(var > foo)";
         String parenthesized = "((((a + b) * 4) > 3) || (((5 * 2) <= 4) && !(var > foo)))";
-        Parser p = parserFromStringStream(expr);
+        Parser p = Util.parserFromStringStream(expr);
 
         assertEquals(parenthesized, p.tryParseBoolExpression().toString());
     }
 
     @Test
     void currencyLiteral(){
-        Parser p = parserFromStringStream("10.42 pln");
+        Parser p = Util.parserFromStringStream("10.42 pln");
 
         Literal literal = p.tryParseLiteral();
         assertEquals(new CCurrency("10.42", "pln"), literal.getValue());
@@ -140,7 +135,7 @@ class ParserTest {
     void simpleArithmeticExpression(){
         String expr = "a + 10.42";
         String parenthesized = "(a + 10.42)";
-        Parser p = parserFromStringStream(expr);
+        Parser p = Util.parserFromStringStream(expr);
 
         assertEquals(parenthesized, p.tryParseArithmeticExpression().toString());
 
@@ -151,7 +146,7 @@ class ParserTest {
     void operatorPriorityNoParentheses(){
         String expr = "a + 10.42 * x";
         String parenthesized = "(a + (10.42 * x))";
-        Parser p = parserFromStringStream(expr);
+        Parser p = Util.parserFromStringStream(expr);
 
         assertEquals(parenthesized, p.tryParseArithmeticExpression().toString());
 
@@ -162,7 +157,7 @@ class ParserTest {
     void operatorPriorityWithParentheses(){
         String expr = "(a + 10.42) * x";
         String parenthesized = "((a + 10.42) * x)";
-        Parser p = parserFromStringStream(expr);
+        Parser p = Util.parserFromStringStream(expr);
 
         assertEquals(parenthesized, p.tryParseArithmeticExpression().toString());
 
@@ -174,7 +169,7 @@ class ParserTest {
     void complexArithmeticExpression(){
         String expr = "a + 10.42 * foo - (5 + 3)";
         String parenthesized = "(a + (10.42 * foo) - (5 + 3))";
-        Parser p = parserFromStringStream(expr);
+        Parser p = Util.parserFromStringStream(expr);
 
         assertEquals(parenthesized, p.tryParseArithmeticExpression().toString());
 
@@ -183,7 +178,7 @@ class ParserTest {
     @Test
     void declareAndInitialize(){
         String expr = "number num = 10.3;";
-        Parser p = parserFromStringStream(expr);
+        Parser p = Util.parserFromStringStream(expr);
 
         assertEquals(expr, p.tryParseAssignOrFunCall().toString());
     }
@@ -191,7 +186,7 @@ class ParserTest {
     @Test
     void assignWithoutDeclaration(){
         String expr = "foo = 'test';";
-        Parser p = parserFromStringStream(expr);
+        Parser p = Util.parserFromStringStream(expr);
 
         assertEquals(expr, p.tryParseAssignOrFunCall().toString());
 
@@ -200,7 +195,7 @@ class ParserTest {
     @Test
     void assignBoolLiteral(){
         String expr = "foo = true;";
-        Parser p = parserFromStringStream(expr);
+        Parser p = Util.parserFromStringStream(expr);
 
         Assignment assignment = (Assignment) p.tryParseAssignOrFunCall();
 
@@ -212,14 +207,14 @@ class ParserTest {
     @Test
     void requireSemicolonAfterAssignment(){
         String expr = "foo = true";
-        Parser p = parserFromStringStream(expr);
+        Parser p = Util.parserFromStringStream(expr);
         assertThrows(SyntaxException.class, () -> p.tryParseAssignOrFunCall());
     }
 
     @Test
     void exchangeDeclaration(){
         String statement = "exchange from pln to gbp 4.32;";
-        Parser p = parserFromStringStream(statement);
+        Parser p = Util.parserFromStringStream(statement);
 
         ExchangeDeclaration decl = p.tryParseExchangeDeclaration();
 
@@ -238,7 +233,7 @@ class ParserTest {
                 "a = 3;\n" +
                 "return a;\n" +
                 "}";
-        Parser p = parserFromStringStream(programStr);
+        Parser p = Util.parserFromStringStream(programStr);
 
         Program program = p.parseProgram();
 
@@ -253,7 +248,7 @@ class ParserTest {
     @Test
     void standaloneFunCall(){
         String statement = "print('test');";
-        Parser p = parserFromStringStream(statement);
+        Parser p = Util.parserFromStringStream(statement);
 
         FunctionCall funcall = (FunctionCall) p.tryParseAssignOrFunCall();
 
@@ -264,7 +259,7 @@ class ParserTest {
     @Test
     void funCallAsRValue(){
         String statement = "number b = fun(3, 5);";
-        Parser p = parserFromStringStream(statement);
+        Parser p = Util.parserFromStringStream(statement);
 
         Assignment assignment = (Assignment) p.tryParseAssignOrFunCall();
 
@@ -275,7 +270,7 @@ class ParserTest {
     @Test
     void currencyCast(){
         String str = "[pln] money";
-        Parser p = parserFromStringStream(str);
+        Parser p = Util.parserFromStringStream(str);
 
         RValue value = p.tryParseRValue();
 
@@ -285,7 +280,7 @@ class ParserTest {
     @Test
     void returnStatement(){
         String str = "return 3;";
-        Parser p = parserFromStringStream(str);
+        Parser p = Util.parserFromStringStream(str);
 
         ReturnStatement value = p.tryParseReturnStatement();
 
@@ -297,7 +292,7 @@ class ParserTest {
     void RValuesAsFunctionCallParameters(){
         String funCall = "fun(fun2(x), 3 / 5, 12.34gbp);";
         String parenthesized = "fun(fun2(x), (3 / 5), 12.34gbp);";
-        Parser p = parserFromStringStream(funCall);
+        Parser p = Util.parserFromStringStream(funCall);
 
         FunctionCall value = (FunctionCall)p.tryParseAssignOrFunCall();
 
@@ -308,7 +303,7 @@ class ParserTest {
     @Test
     void boolExprAsRValue(){
         String str = "bool a = (x == 3);";
-        Parser p = parserFromStringStream(str);
+        Parser p = Util.parserFromStringStream(str);
 
         Assignment value = (Assignment)p.tryParseAssignOrFunCall();
 
@@ -320,7 +315,7 @@ class ParserTest {
     void ComplexBoolExprAsRValue(){
         String str = "bool a = x == 3 || b > 2 && a + fun(6) > 2;";
         String parenthesized = "bool a = ((x == 3) || ((b > 2) && ((a + fun(6)) > 2)));";
-        Parser p = parserFromStringStream(str);
+        Parser p = Util.parserFromStringStream(str);
 
         Assignment assignment = (Assignment)p.tryParseAssignOrFunCall();
 
@@ -336,7 +331,7 @@ class ParserTest {
     void BoolExprWithParentheses(){
         String str = "abc = (3 + 2) * 3 >= 10;";
         String parenthesized = "abc = (((3 + 2) * 3) >= 10);";
-        Parser p = parserFromStringStream(str);
+        Parser p = Util.parserFromStringStream(str);
 
         Assignment assignment = (Assignment)p.tryParseAssignOrFunCall();
 
@@ -351,7 +346,7 @@ class ParserTest {
     void BoolExprWithParentheses2(){
         String str = "abc = (a || b) && c || d;";
         String parenthesized = "abc = (((a || b) && c) || d);";
-        Parser p = parserFromStringStream(str);
+        Parser p = Util.parserFromStringStream(str);
 
         Assignment assignment = (Assignment)p.tryParseAssignOrFunCall();
 
@@ -363,7 +358,7 @@ class ParserTest {
     @Test
     void avoidExpressionNestingWhenOnlyOneOperand(){
         String str = "5";
-        Parser p = parserFromStringStream(str);
+        Parser p = Util.parserFromStringStream(str);
 
         RValue val = p.tryParseRValue();
 
@@ -373,7 +368,7 @@ class ParserTest {
     @Test
     void avoidExpressionNestingWhenOnlyOneOperand2(){
         String str = "5 * 3";
-        Parser p = parserFromStringStream(str);
+        Parser p = Util.parserFromStringStream(str);
 
         RValue val = p.tryParseRValue();
 
@@ -383,7 +378,7 @@ class ParserTest {
     @Test
     void boolUnaryOp(){
         String str = "!(a || b && c)";
-        Parser p = parserFromStringStream(str);
+        Parser p = Util.parserFromStringStream(str);
 
         RValue val = p.tryParseRValue();
 

@@ -1,14 +1,38 @@
 package currencies.types;
 
 import java.math.BigDecimal;
-import java.util.Objects;
 
-public class CNumber implements CType, Comparable<CNumber>{
+public class CNumber extends CType<CNumber> implements Comparable<CNumber>{
 
     BigDecimal number;
 
     public CNumber(BigDecimal number) {
         this.number = number;
+    }
+
+
+    public CNumber add(CNumber other){
+        return new CNumber(number.add(other.getValue()));
+    }
+
+    public CNumber subtract(CNumber other){
+        return new CNumber(number.subtract(other.getValue()));
+    }
+
+    public CNumber multiply(CNumber other){
+        return new CNumber(number.multiply(other.getValue()));
+    }
+    public CNumber divide(CNumber other){
+        return new CNumber(number.divide(other.getValue()));
+    }
+
+    public CCurrency divide(CCurrency other){
+        return new CCurrency(this.divide(other.getValue()), other.getCode());
+    }
+
+
+    public static CNumber fromStr(String strvalue){
+        return new CNumber(new BigDecimal(strvalue));
     }
 
     /** False if 0 (any precision) */
@@ -28,11 +52,6 @@ public class CNumber implements CType, Comparable<CNumber>{
     }
 
     @Override
-    public String toString() {
-        return number.toString();
-    }
-
-    @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
@@ -40,8 +59,4 @@ public class CNumber implements CType, Comparable<CNumber>{
         return number.equals(cNumber.number);
     }
 
-    @Override
-    public int hashCode() {
-        return Objects.hash(number);
-    }
 }

@@ -1,9 +1,9 @@
 import currencies.types.CCurrency;
-import currencies.NumberFactory;
 import currencies.lexer.Lexer;
 import currencies.lexer.Token;
 import currencies.lexer.TokenType;
 import currencies.reader.CodeInputStream;
+import currencies.types.CNumber;
 import org.junit.jupiter.api.*;
 
 import java.io.ByteArrayInputStream;
@@ -16,7 +16,7 @@ class LexerTest {
 
     @BeforeAll
     static void loadCurrencies(){
-        CCurrency.loadExchangeRates("data/exchangeRates.json");
+        Util.loadCurrencies();
     }
 
     Lexer lexerFromStringStream(String s){
@@ -48,7 +48,7 @@ class LexerTest {
 
         assertAll(
                 ()-> assertEquals(TokenType.T_NUMBER_LITERAL, l.getNextToken().getType()),
-                ()->assertEquals(NumberFactory.get("32"), l.currentToken().getValue())
+                ()->assertEquals(CNumber.fromStr("32"), l.currentToken().getValue())
         );
     }
 
@@ -86,7 +86,7 @@ class LexerTest {
 
         assertAll(
                 ()-> assertEquals(TokenType.T_NUMBER_LITERAL, l.getNextToken().getType()),
-                ()->assertEquals(NumberFactory.get("69"), l.currentToken().getValue())
+                ()->assertEquals(CNumber.fromStr("69"), l.currentToken().getValue())
         );
     }
 
@@ -96,7 +96,7 @@ class LexerTest {
 
         assertAll(
                 ()-> assertEquals(TokenType.T_NUMBER_LITERAL, l.getNextToken().getType()),
-                ()->assertEquals(NumberFactory.get("69.69"), l.currentToken().getValue())
+                ()->assertEquals(CNumber.fromStr("69.69"), l.currentToken().getValue())
         );
     }
 
@@ -152,7 +152,7 @@ class LexerTest {
         assertAll(
                 "Ids can not start with a number",
                 ()-> assertEquals(TokenType.T_NUMBER_LITERAL, l.getNextToken().getType()),
-                ()-> assertEquals(NumberFactory.get("69"), l.currentToken().getValue()),
+                ()-> assertEquals(CNumber.fromStr("69"), l.currentToken().getValue()),
                 ()-> assertEquals(TokenType.T_IDENTIFIER, l.getNextToken().getType()),
                 ()-> assertEquals("foo", l.currentToken().getValue())
         );
@@ -270,7 +270,7 @@ class LexerTest {
         void number(){
             assertAll(
                     () -> assertEquals(TokenType.T_NUMBER_LITERAL, t.getType()),
-                    ()-> assertEquals(NumberFactory.get("42"), t.getValue())
+                    ()-> assertEquals(CNumber.fromStr("42"), t.getValue())
             );
         }
         @Test @Order(4)
@@ -332,7 +332,7 @@ class LexerTest {
         void number(){
             assertAll(
                     () -> assertEquals(TokenType.T_NUMBER_LITERAL, t.getType()),
-                    () -> assertEquals(NumberFactory.get("4.21"), t.getValue())
+                    () -> assertEquals(CNumber.fromStr("4.21"), t.getValue())
             );
         }
         @Test @Order(7)
@@ -367,7 +367,7 @@ class LexerTest {
         void number_1(){
             assertAll(
                     () -> assertEquals(TokenType.T_NUMBER_LITERAL, t.getType()),
-                    () -> assertEquals(NumberFactory.get("43.2"), t.getValue())
+                    () -> assertEquals(CNumber.fromStr("43.2"), t.getValue())
             );
         }
         @Test @Order(2)
@@ -378,7 +378,7 @@ class LexerTest {
         void number_2(){
             assertAll(
                     () -> assertEquals(TokenType.T_NUMBER_LITERAL, t.getType()),
-                    () -> assertEquals(NumberFactory.get("90"), t.getValue())
+                    () -> assertEquals(CNumber.fromStr("90"), t.getValue())
             );
         }
         @Test @Order(4)
@@ -389,7 +389,7 @@ class LexerTest {
         void number_3(){
             assertAll(
                     () -> assertEquals(TokenType.T_NUMBER_LITERAL, t.getType()),
-                    () -> assertEquals(NumberFactory.get("21.3"), t.getValue())
+                    () -> assertEquals(CNumber.fromStr("21.3"), t.getValue())
             );
         }
         @Test @Order(6)

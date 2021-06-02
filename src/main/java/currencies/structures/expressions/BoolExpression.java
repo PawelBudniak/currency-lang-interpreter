@@ -1,5 +1,8 @@
 package currencies.structures.expressions;
 
+import currencies.types.CBoolean;
+import currencies.types.CType;
+
 import java.util.List;
 
 public class BoolExpression extends RValue{
@@ -19,7 +22,24 @@ public class BoolExpression extends RValue{
         return exprToStr(operands, "||");
     }
 
-    public RValue getFirstOperand(){
-        return operands.get(0);
+    @Override
+    public CType getValue() {
+        if (operands.size() == 1) {
+            assert false: "one operand boolexpr shouldn't be possible";
+            return operands.get(0).getValue();
+        }
+
+//        boolean value = operands.get(0).truthValue() || operands.get(1).truthValue();
+//        // break early if a true value was found
+//        for (int i = 2; i < operands.size() && !value; i++) {
+//            value = operands.get(i).truthValue() || value;
+//        }
+//
+//        return new CBoolean(value);
+
+        return operands.stream()
+                .reduce(new CBoolean(false), (currentVal, rValue) -> currentVal.or(rValue.truthValue()), CBoolean::or);
+
     }
+
 }

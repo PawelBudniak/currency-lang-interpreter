@@ -423,14 +423,14 @@ public class Parser {
             nextToken();
             return new Literal(new CBoolean(value), T_KW_BOOl);
         } else if (currentToken.getType() == T_NUMBER_LITERAL) {
-            BigDecimal value = (BigDecimal) currentToken.getValue();
+            CNumber value = (CNumber) currentToken.getValue();
             nextToken();
             if (currentToken.getType() == T_CURRENCY_CODE) {
                 CCurrency currencyLiteral = new CCurrency(value, (String) currentToken.getValue());
                 nextToken();
                 return new Literal(currencyLiteral, T_KW_CURRENCY);
             }
-            return new Literal(new CNumber(value), T_KW_NUMBER);
+            return new Literal(value, T_KW_NUMBER);
         }
         return null;
     }

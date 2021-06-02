@@ -2,41 +2,40 @@ package currencies.types;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import currencies.NumberFactory;
 
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.Reader;
-import java.math.BigDecimal;
+import java.lang.reflect.Field;
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class CCurrency implements Comparable<CCurrency>, CType{
+public class CCurrency extends CType<CCurrency> implements Comparable<CCurrency>{
     public static final int CODE_LEN = 3;
 
-    private BigDecimal value;
+    private CNumber value;
     private String code;
 
     public CCurrency(String strvalue, String code) {
-        this.value = NumberFactory.get(strvalue);
+        this.value = CNumber.fromStr(strvalue);
         this.code = code;
     }
 
-    public CCurrency(BigDecimal value, String code) {
+    public CCurrency(CNumber value, String code) {
         this.value = value;
         this.code = code;
     }
 
 
     @Override
-    public BigDecimal getValue() {
+    public CNumber getValue() {
         return value;
     }
 
     /** False if 0 (any precision) */
     @Override
     public boolean truthValue(){
-        return value.compareTo(BigDecimal.ZERO) != 0;
+        return value.truthValue();
     }
 
     public String getCode() {
@@ -46,6 +45,31 @@ public class CCurrency implements Comparable<CCurrency>, CType{
     public String getTypeStr(){
         return code.toString().toLowerCase();
     }
+
+    public CNumber divide(CCurrency other){
+        return value.divide(other.getValue());
+    }
+
+    public CCurrency add(CCurrency other){
+        return new CCurrency(value.add(other.getValue()), code);
+    }
+
+    public CCurrency subtract(CCurrency other){
+        return new CCurrency(value.subtract(other.getValue()), code);
+    }
+
+    public CCurrency multiply(CNumber other){
+        return new CCurrency(value.multiply(other), code);
+    }
+
+    public CCurrency divide(CNumber other){
+        return new CCurrency(value.divide(other), code);
+    }
+
+    public boolean codesEqual(CCurrency other){
+        return code.equals(other.getCode());
+    }
+
 
     @Override
     public boolean equals(Object o) {
@@ -67,7 +91,7 @@ public class CCurrency implements Comparable<CCurrency>, CType{
     }
 
 
-    private static Map<String, Map<String, ? extends  Number>> exchangeRates;
+    private static Map<String, Map<String, CNumber>> exchangeRates;
 
     public static void loadExchangeRates(String file){
 
@@ -84,11 +108,11 @@ public class CCurrency implements Comparable<CCurrency>, CType{
             // transform exchange rate values into objects provided by NumberFactory
             for (String currencyFrom: input.keySet()){
 
-                Map<String, ? extends  Number> nestedRates = input.get(currencyFrom).entrySet()
+                Map<String, CNumber> nestedRates = input.get(currencyFrom).entrySet()
                         .stream()
                         .collect(Collectors.toMap(
                                 e -> e.getKey(),
-                                e -> NumberFactory.get(e.getValue())
+                                e -> CNumber.fromStr(e.getValue())
                         ));
 
                 exchangeRates.put(currencyFrom, nestedRates);

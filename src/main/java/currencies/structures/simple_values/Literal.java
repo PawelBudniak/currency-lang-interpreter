@@ -3,12 +3,13 @@ package currencies.structures.simple_values;
 import currencies.types.CCurrency;
 import currencies.lexer.TokenType;
 import currencies.structures.expressions.RValue;
+import currencies.types.CType;
 
 public class Literal extends RValue {
-    Object value;
+    CType value;
     TokenType type;
 
-    public Literal(Object value, TokenType type) {
+    public Literal(CType value, TokenType type) {
         this.value = value;
         this.type = type;
     }
@@ -19,7 +20,7 @@ public class Literal extends RValue {
     }
 
     @Override
-    public Object getValue() {
+    public CType getValue() {
         return value;
     }
 }
