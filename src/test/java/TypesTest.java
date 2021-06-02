@@ -1,5 +1,4 @@
 import currencies.parser.Parser;
-import currencies.structures.expressions.BoolFactor;
 import currencies.structures.simple_values.Literal;
 import currencies.types.CBoolean;
 import org.junit.jupiter.api.BeforeAll;

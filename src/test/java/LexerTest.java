@@ -241,7 +241,7 @@ class LexerTest {
     @Nested
     @TestInstance(TestInstance.Lifecycle.PER_CLASS)
     @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-    class Assignment{
+    private class Assignment{
         Lexer lexer;
         Token t;
 
@@ -287,7 +287,7 @@ class LexerTest {
     @Nested
     @TestInstance(TestInstance.Lifecycle.PER_CLASS)
     @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-    class ExchangeRate{
+    private class ExchangeRate{
         Lexer lexer;
         Token t;
 
@@ -349,7 +349,7 @@ class LexerTest {
     @Nested
     @TestInstance(TestInstance.Lifecycle.PER_CLASS)
     @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-    class AdditionAndMultiplication{
+    private class AdditionAndMultiplication{
         Lexer lexer;
         Token t;
 

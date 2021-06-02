@@ -8,15 +8,27 @@ public class Variable extends RValue {
 
     private String name;
     private CType value;
-    private TokenType type;
+    private Class<?> type;
 
     public Variable(String name) {
         this.name = name;
     }
 
-    public Variable(String name, TokenType type) {
+    public Variable(String name, Class<?> type) {
         this.name = name;
         this.type = type;
+    }
+
+    boolean isDefined(){
+        return type == null;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public Class<?> getType() {
+        return type;
     }
 
     public CType getValue() {

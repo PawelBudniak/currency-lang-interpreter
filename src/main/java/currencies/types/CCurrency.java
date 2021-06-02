@@ -2,6 +2,9 @@ package currencies.types;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import currencies.ExecutionException;
+import currencies.executor.Utils;
+import currencies.reader.CharPosition;
 
 import java.io.FileReader;
 import java.io.IOException;
@@ -50,6 +53,16 @@ public class CCurrency extends CType<CCurrency> implements Comparable<CCurrency>
         return value.divide(other.getValue());
     }
 
+    @Override
+    public CType add (CType other, CharPosition position){
+        if (other instanceof CCurrency){
+            Utils.requireSameCurrencyTypes(this,other,"add", position);
+            return this.add((CCurrency)other);
+        }
+        return super.add(other,position);
+
+    }
+
     public CCurrency add(CCurrency other){
         return new CCurrency(value.add(other.getValue()), code);
     }
@@ -66,8 +79,26 @@ public class CCurrency extends CType<CCurrency> implements Comparable<CCurrency>
         return new CCurrency(value.divide(other), code);
     }
 
+    @Override
+    public CCurrency negate(){
+        return new CCurrency(value.negate(), code);
+    }
+
     public boolean codesEqual(CCurrency other){
         return code.equals(other.getCode());
+    }
+
+    @Override
+    public CCurrency currencyCast(String targetCode){
+
+        if (targetCode.equals(code))
+            return this;
+
+        CNumber exchangeRate = exchangeRates.get(code).get(targetCode);
+        if (exchangeRate == null)
+            throw new ExecutionException("Exchange rate hasn't been defined from currency" + code + " to " + targetCode, null);
+
+        return new CCurrency(value.multiply(exchangeRate), targetCode);
     }
 
 
@@ -93,7 +124,21 @@ public class CCurrency extends CType<CCurrency> implements Comparable<CCurrency>
 
     private static Map<String, Map<String, CNumber>> exchangeRates;
 
+    /** Returns true also for differing precision - same value comparisons, e.g. 0.00 [equals] 0.0,
+     * This is not the case for the default equals method
+      */
+    public boolean precisionlessEquals(CCurrency other){
+        return this.compareTo(other) == 0;
+    }
+
+
+
+    public static void setExchangeRate(String codeFrom, String codeTo, CNumber rate){
+        exchangeRates.get(codeFrom).put(codeTo,rate);
+    }
+
     public static void loadExchangeRates(String file){
+
 
         exchangeRates = new HashMap<>();
         Gson gson = new Gson();

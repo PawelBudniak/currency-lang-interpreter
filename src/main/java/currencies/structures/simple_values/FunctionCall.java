@@ -1,7 +1,9 @@
 package currencies.structures.simple_values;
 
+import currencies.executor.Scope;
 import currencies.structures.expressions.RValue;
 import currencies.structures.statements.Statement;
+import currencies.types.CType;
 
 import java.util.List;
 
@@ -27,6 +29,16 @@ public class FunctionCall extends RValue implements Statement {
     }
 
     @Override
+    public void execute(Scope scope){
+
+    }
+
+    @Override
+    public CType getValue() {
+        return null;
+    }
+
+    @Override
     public String toString() {
         StringBuilder str = new StringBuilder(functionName + "(");
 
@@ -39,6 +51,5 @@ public class FunctionCall extends RValue implements Statement {
         if (asStatement)
             str.append(";");
         return str.toString();
-
     }
 }

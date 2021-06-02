@@ -15,7 +15,6 @@ import currencies.structures.statements.*;
 import currencies.types.CNumber;
 import currencies.types.CString;
 
-import java.math.BigDecimal;
 import java.util.*;
 import java.util.stream.Stream;
 
@@ -102,6 +101,7 @@ public class Parser {
         nextToken();
 
         Block block = parseBlock();
+        block.setFunctionBody(true);
 
         return new Function(returnType, name, args, block);
     }
@@ -260,13 +260,13 @@ public class Parser {
                 throw new SyntaxException("No expression found in parentheses", currentToken.getPosition());
 
             requireThenNextToken(T_PAREN_CLOSE);
-            return ArithmeticFactor.factorOrRValue(unaryOp, expression);
+            return Factor.factorOrRValue(unaryOp, expression);
         }
 
         RValue simpleValue = tryParseSimpleValue();
         if (simpleValue == null)
             return null;
-        return ArithmeticFactor.factorOrRValue(unaryOp, simpleValue);
+        return Factor.factorOrRValue(unaryOp, simpleValue);
 
     }
 
@@ -372,7 +372,7 @@ public class Parser {
             if (expression == null)
                 throw new SyntaxException("No expression found in parentheses", currentToken.getPosition());
             requireThenNextToken(T_PAREN_CLOSE);
-            return  BoolFactor.factorOrRValue(unaryOp, expression);
+            return  Factor.factorOrRValue(unaryOp, expression);
         }
 
 
@@ -386,10 +386,10 @@ public class Parser {
             if (rightOperand == null)
                 throw new SyntaxException("No second operand found after comparison operator", currentToken.getPosition());
 
-            return  BoolFactor.factorOrRValue(unaryOp, new Comparison(simpleValue, operator, rightOperand));
+            return  Factor.factorOrRValue(unaryOp, new Comparison(simpleValue, operator, rightOperand));
         }
 
-        return  BoolFactor.factorOrRValue(unaryOp, simpleValue);
+        return  Factor.factorOrRValue(unaryOp, simpleValue);
 
 
     }

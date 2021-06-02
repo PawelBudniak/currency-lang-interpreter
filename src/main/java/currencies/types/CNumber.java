@@ -1,5 +1,8 @@
 package currencies.types;
 
+import currencies.ExecutionException;
+import currencies.reader.CharPosition;
+
 import java.math.BigDecimal;
 
 public class CNumber extends CType<CNumber> implements Comparable<CNumber>{
@@ -10,6 +13,14 @@ public class CNumber extends CType<CNumber> implements Comparable<CNumber>{
         this.number = number;
     }
 
+
+
+    public CType add(CType other, CharPosition position){
+        if (other instanceof CNumber)
+            return this.add((CNumber)other);
+
+        return super.add(other,position);
+    }
 
     public CNumber add(CNumber other){
         return new CNumber(number.add(other.getValue()));
@@ -25,11 +36,6 @@ public class CNumber extends CType<CNumber> implements Comparable<CNumber>{
     public CNumber divide(CNumber other){
         return new CNumber(number.divide(other.getValue()));
     }
-
-    public CCurrency divide(CCurrency other){
-        return new CCurrency(this.divide(other.getValue()), other.getCode());
-    }
-
 
     public static CNumber fromStr(String strvalue){
         return new CNumber(new BigDecimal(strvalue));
@@ -57,6 +63,11 @@ public class CNumber extends CType<CNumber> implements Comparable<CNumber>{
         if (o == null || getClass() != o.getClass()) return false;
         CNumber cNumber = (CNumber) o;
         return number.equals(cNumber.number);
+    }
+
+    @Override
+    public CNumber negate(){
+        return new CNumber(number.negate());
     }
 
 }

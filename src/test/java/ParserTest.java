@@ -1,8 +1,6 @@
-import currencies.lexer.Lexer;
 import currencies.lexer.Token;
 import currencies.parser.Parser;
 import currencies.parser.SyntaxException;
-import currencies.reader.CodeInputStream;
 import currencies.structures.Function;
 import currencies.structures.Program;
 import currencies.structures.TypeAndId;
@@ -14,9 +12,6 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import static currencies.lexer.TokenType.*;
 
-import java.io.ByteArrayInputStream;
-import java.io.InputStream;
-import java.nio.charset.StandardCharsets;
 import currencies.types.CCurrency;
 import java.util.List;
 
@@ -383,9 +378,9 @@ class ParserTest {
         RValue val = p.tryParseRValue();
 
         assertAll(
-                () -> assertTrue(val instanceof BoolFactor),
-                () -> assertTrue(((BoolFactor)val).getUnaryOperator().getType() == T_EXCLAMATION),
-                () -> assertTrue(((BoolFactor)val).getExpression() instanceof BoolExpression)
+                () -> assertTrue(val instanceof Factor),
+                () -> assertTrue(((Factor)val).getUnaryOperator().getType() == T_EXCLAMATION),
+                () -> assertTrue(((Factor)val).getExpression() instanceof BoolExpression)
         );
     }
 

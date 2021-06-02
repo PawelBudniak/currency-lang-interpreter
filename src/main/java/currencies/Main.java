@@ -8,6 +8,7 @@ public class Main {
 
         CCurrency.loadExchangeRates("data/exchangeRates.json");
 
+
 //        try (RandomAccessFile fp = new RandomAccessFile("data/input", "rw")){
 //
 //            Lexer lexer = new Lexer(new FileReader(fp));

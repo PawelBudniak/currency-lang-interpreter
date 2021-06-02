@@ -1,5 +1,6 @@
 package currencies.structures.expressions;
 
+import currencies.executor.Scope;
 import currencies.types.CCurrency;
 import currencies.lexer.Token;
 import currencies.lexer.TokenType;
@@ -62,30 +63,30 @@ public abstract class RValue {
         }
     }
 
-    public boolean truthValue(){
-        return getValue().truthValue();
+
+    public boolean truthValue(Scope scope){
+        return getValue(scope).truthValue();
     }
 
-    public CType getValue(){
-        return new CType() {
-            @Override
-            public int compareTo(Object o) {
-                return 0;
-            }
+    public abstract CType getValue(Scope scope);
 
-            @Override
-            public boolean truthValue() {
-                return false;
-            }
-
-            @Override
-            public Object getValue() {
-                return null;
-            }
-        };
+    protected CType applyOperator(CType first, Token operator, CType second) {
+        throw new UnsupportedOperationException();
     }
 
-    //public abstract Object getValue();
+    protected CType applyOperators(List<RValue> operands, List<Token> operators){
+        if (operands.size() == 1) {
+            assert false: "one operand expression shouldn't be possible";
+            return operands.get(0).getValue();
+        }
 
+        CType value = applyOperator(operands.get(0).getValue(), operators.get(0), operands.get(1).getValue());
+        for (int i = 2; i < operands.size(); i++) {
+            value = applyOperator(value, operators.get(i-1), operands.get(i).getValue());
+        }
+
+        return value;
+
+    }
 
 }

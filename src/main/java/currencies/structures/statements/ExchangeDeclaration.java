@@ -1,5 +1,6 @@
 package currencies.structures.statements;
 
+import currencies.executor.Scope;
 import currencies.structures.expressions.RValue;
 
 public class ExchangeDeclaration implements Statement {
@@ -12,6 +13,11 @@ public class ExchangeDeclaration implements Statement {
         this.from = from;
         this.to = to;
         this.value = value;
+    }
+
+    @Override
+    public void execute(Scope scope){
+        
     }
 
     public String getFrom() {

@@ -11,9 +11,6 @@ public class Utils {
 //            throw new ExecutionException("Cannot " + action + "values of different types", position);
 //    }
 
-    public static void requireSameTypes(RValue first, RValue second, String action, CharPosition position){
-        requireSameTypes(first.getValue(), second.getValue(), action, position);
-    }
 
     public static void requireSameTypes(Object first, Object second, String action, CharPosition position){
         if (first.getClass() != second.getClass())
