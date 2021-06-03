@@ -150,7 +150,7 @@ public class CCurrency extends CType<CCurrency> implements Comparable<CCurrency>
             // Convert JSON File to Java Object
             input = gson.fromJson(reader, input.getClass());
 
-            // transform exchange rate values into objects provided by NumberFactory
+            // transform exchange rate values into CNumbers
             for (String currencyFrom: input.keySet()){
 
                 Map<String, CNumber> nestedRates = input.get(currencyFrom).entrySet()
@@ -193,9 +193,7 @@ public class CCurrency extends CType<CCurrency> implements Comparable<CCurrency>
 
     @Override
     public int compareTo(CCurrency other) {
-
-        if (!this.getCode().equals(other.getCode()))
-            throw new RuntimeException("Cannot compare currencies of different types, a cast is required: e.g: [pln] curr_variable");
+        Utils.requireSameCurrencyTypes(this, other,"compare", null);
 
         return getValue().compareTo(other.getValue());
     }

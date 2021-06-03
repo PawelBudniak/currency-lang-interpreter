@@ -13,6 +13,8 @@ number factorial(number n){
     return n * factorial(n-1);
 }
 
+
+
 number fib(number n){
     if (n == 0 || n == 1){
         return 1;
@@ -20,6 +22,8 @@ number fib(number n){
 
      return fib(n-2) + fib(n-1);
 }
+
+
 
 number deep(){
     if (true){
@@ -29,20 +33,45 @@ number deep(){
         print('cienko');
     }
     print('cienko2');
-
-
 }
 
+void testfun(currency x ){
+    x = 5 gbp;
+    print (x);
+}
+
+void printDouble (currency x){
+    print(2*x);
+}
 
 void main(){
     number x = 3;
     print('first number: ', x);
+
+    testfun(4 pln);
+    print('x after: ', x);
 
     number y = 0;
     while (y < 5){
         print(y);
         y = incr(y);
     }
+
+    x = 3 + 6;
+    print('x: ' + x);
+    number z = x + 10;
+    print('z:' + z);
+    print('x: ' + x);
+    bool mybool = (x + y) * 4 > 3 && !(5 * 2 <= 4) && (factorial(5) > fib(4));
+    print(mybool);
+
+    currency zlotys = 10 pln;
+    currency dolars = 10 usd;
+    currency result = zlotys + [pln] dolars;
+    print(result);
+
+
+    printDouble(result);
 
     currency polishWyplata = 2600 pln;
 

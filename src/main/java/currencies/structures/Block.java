@@ -1,7 +1,7 @@
 package currencies.structures;
 
+import currencies.executor.ReturnStatementException;
 import currencies.executor.Scope;
-import currencies.structures.statements.ReturnStatement;
 import currencies.structures.statements.Statement;
 import currencies.types.CType;
 
@@ -25,25 +25,32 @@ public class Block {
     }
 
     public void execute(Scope scope){
+     //TODO: argumenty funcalla nie traktowac jako outer
 
-        //TODO: shadowowanie zmiennych przy assignmentach here
 
-        try {
-            for (Statement statement : statements) {
+        scope.enterNewLocalScope();
+
+        for (Statement statement : statements) {
+            try {
                 statement.execute(scope);
-                if (statement instanceof ReturnStatement) {
-                    throw new ReturnStatementException(((ReturnStatement) statement).getResult());
+            }
+
+            // keep rethrowing to find the block that is a function's body
+            catch (ReturnStatementException ex){
+                if (isFunctionBody) {
+                    returnedValue = ex.getReturnedValue();
+                    break;
+                }
+                else {
+                    scope.leaveLocalScope();
+                    throw ex;
                 }
             }
-        }
 
-        // keep rethrowing to find the block that is a function's body
-        catch (ReturnStatementException ex){
-            if (isFunctionBody)
-                returnedValue = ex.getReturnedValue();
-            else
-                throw ex;
         }
+        scope.leaveLocalScope();
+
+
     }
 
     public CType getReturnedValue() {

@@ -65,6 +65,10 @@ public class CNumber extends CType<CNumber> implements Comparable<CNumber>{
         return number.equals(cNumber.number);
     }
 
+    public CCurrency currencyCast(String targetCode){
+        return new CCurrency(this, targetCode);
+    }
+
     @Override
     public CNumber negate(){
         return new CNumber(number.negate());

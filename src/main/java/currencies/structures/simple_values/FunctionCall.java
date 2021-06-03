@@ -39,6 +39,8 @@ public class FunctionCall extends RValue implements Statement {
     @Override
     public void execute(Scope scope){
 
+        //TODO: jakis ogolny stdlib, typu Map<String, Executable> ?
+
         // built-in print function
         if (functionName.equals("print")){
             for (RValue rValue: arguments){
@@ -54,7 +56,7 @@ public class FunctionCall extends RValue implements Statement {
 
 
 
-        function.call(scope.newVariableSet(args));
+        function.call(scope.newFunCallScope(args));
         returnValue = function.getReturnedValue();
     }
 
@@ -80,6 +82,7 @@ public class FunctionCall extends RValue implements Statement {
     }
 
 
+    /** Executes the function and returns the returned value */
     @Override
     public CType getValue(Scope scope) {
         execute(scope);

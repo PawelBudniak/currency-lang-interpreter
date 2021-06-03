@@ -1,7 +1,10 @@
 import currencies.executor.Scope;
+import currencies.structures.Function;
+import currencies.structures.Program;
 import currencies.structures.simple_values.FunctionCall;
 import currencies.structures.simple_values.Variable;
 import currencies.structures.statements.Assignment;
+import currencies.structures.statements.IfStatement;
 import currencies.structures.statements.Loop;
 import currencies.types.*;
 import currencies.ExecutionException;
@@ -427,12 +430,146 @@ public class ExecutorTest {
 
         assertAll(
                 () -> assertTimeoutPreemptively(Duration.ofMillis(2000), () -> loop.execute(scope),
-                        "executing a 3-iteration while loop should take less than 2 seconds"),
+                        "executing a 3-iteration while loop should definitely take less than 2 seconds"),
                 () -> assertEquals(CNumber.fromStr("3"), scope.getVariable("x").getSavedValue())
         );
 
+    }
+
+    @Test
+    void ifStatement() {
+        Parser p = Util.parserFromStringStream("number x = 0; if (1 gbp) { x = x + 1;}");
+        Assignment assignment = (Assignment) p.tryParseAssignOrFunCall();
+        Scope scope = Scope.empty();
+        assignment.execute(scope);
+
+        IfStatement ifStatement = p.tryParseIfStatement();
+        ifStatement.execute(scope);
+
+        assertEquals(CNumber.fromStr("1"), scope.getVariable("x").getSavedValue());
+    }
+
+    @Test
+    void ifStatementFalseTruthValue() {
+        Parser p = Util.parserFromStringStream("number x = 0; if (0 gbp) { x = x + 1;}");
+        Assignment assignment = (Assignment) p.tryParseAssignOrFunCall();
+        Scope scope = Scope.empty();
+        assignment.execute(scope);
+
+        IfStatement ifStatement = p.tryParseIfStatement();
+        ifStatement.execute(scope);
+
+        assertEquals(CNumber.fromStr("0"), scope.getVariable("x").getSavedValue());
+    }
+
+    @Test
+    void returnIsTheLastStatementExecutedInFunction(){
+        Parser p = Util.parserFromStringStream(
+                "number deep(){\n" +
+                "    if (true){\n" +
+                "        if (true){\n" +
+                "            return 3;\n" +
+                "        }\n" +
+                "        print('cienko');\n" +
+                "    }\n" +
+                "    print('cienko2');\n" +
+                "}" +
+                "deep();"
+                );
+
+
+        Function function = p.tryParseFunction();
+        FunctionCall funcall = (FunctionCall) p.tryParseAssignOrFunCall();
+
+        final ByteArrayOutputStream myOut = new ByteArrayOutputStream();
+        System.setOut(new PrintStream(myOut));
+
+        Scope scope = Scope.empty();
+        scope.newFunction(function);
+
+        CType returned = funcall.getValue(scope);
+
+        final String stdOutResult = myOut.toString();
+        assertAll(
+                () -> assertEquals("", stdOutResult),
+                () -> assertEquals(CNumber.fromStr("3"), returned)
+        );
+    }
+
+    @Test
+    void currencyCastFromNumberIsPossible(){
+        Parser p = Util.parserFromStringStream("currency x = [gbp] 10;");
+        Assignment assignment = (Assignment) p.tryParseAssignOrFunCall();
+        Scope scope = Scope.empty();
+
+        assignment.execute(scope);
+
+        assertEquals(new CCurrency("10", "gbp"), scope.getVariable("x").getSavedValue());
+    }
+
+    @Test
+    void blocksAllowForLocalVariables(){
+        Parser p = Util.parserFromStringStream(
+                        "void main(){" +
+                                "    number x = 0;" +
+                                "    if (!x){" +
+                                "        number x = 10;" +
+                                "        print(x);" +
+                                "    }" +
+                                "    print(x);" +
+                                "}"
+        );
+        Program program = p.parseProgram();
+
+        ByteArrayOutputStream stream = Util.beginCaptureStdout();
+        program.execute();
+        String stdout = Util.getCaptured(stream);
+
+        assertEquals("10\n0\n", stdout);
+    }
+
+    @Test
+    void recursiveFunctionsWork(){
+        Parser p = Util.parserFromStringStream(
+                "number factorial(number n){" +
+                        "    if (n == 0){" +
+                        "    return 1;" +
+                        "     }" +
+                        "     return n * factorial(n-1);" +
+                        "}" +
+                        "factorial(6);"
+        );
+        Function function = p.tryParseFunction();
+        FunctionCall functionCall = (FunctionCall) p.tryParseAssignOrFunCall();
+
+        Scope scope = Scope.empty();
+        scope.newFunction(function);
+        CType result = functionCall.getValue(scope);
+
+        assertEquals(CNumber.fromStr("720"), result);
+    }
+
+    @Test
+    void disallowRedefiningFunctionParameters(){
+        Parser p = Util.parserFromStringStream(
+                "void fun(bool param){\n" +
+                        "    bool param = false;\n" +
+                        "}\n" +
+                        "fun(false);"
+        );
+        Function function = p.tryParseFunction();
+        FunctionCall functionCall = (FunctionCall) p.tryParseAssignOrFunCall();
+
+        Scope scope = Scope.empty();
+        scope.newFunction(function);
+
+
+        assertThrows(ExecutionException.class, () -> functionCall.execute(scope));
 
     }
+
+
+
 
 
 

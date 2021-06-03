@@ -6,6 +6,7 @@ public interface CodeInput {
     int EOF_CODE = -1;
     int NOT_SUPPORTED = -2;
 
+    //TODO: fix this
     CharPosition getPosition();
     char nextChar();
     boolean hasNext();

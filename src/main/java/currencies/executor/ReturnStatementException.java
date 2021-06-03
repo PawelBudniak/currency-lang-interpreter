@@ -1,4 +1,4 @@
-package currencies.structures;
+package currencies.executor;
 
 import currencies.types.CType;
 

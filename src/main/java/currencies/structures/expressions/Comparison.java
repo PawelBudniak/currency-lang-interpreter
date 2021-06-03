@@ -29,7 +29,7 @@ public class Comparison extends RValue {
         CType rightValue = rightOperand.getValue(scope);
 
         Utils.requireSameTypes(leftValue, rightValue,"compare", operator.getPosition());
-        Utils.requireSameCurrencyTypes(leftValue,rightValue,"compare", operator.getPosition());
+
 
         int result = leftValue.compareTo(rightValue);
 

@@ -38,8 +38,7 @@ public class Assignment implements Statement{
 
         // declaration and initialization, e.g int x = 3;
         if (type != null){
-            if (scope.getVariable(var.getName()) != null)
-                throw new ExecutionException("Trying to redefine variable: " + var.getName(), null);
+
 
             variable = new Variable(var.getName(), CType.typeOf(type.valueStr()));
             variable.setValue(assigningValue);
