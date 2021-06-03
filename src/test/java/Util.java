@@ -1,5 +1,6 @@
 import currencies.lexer.Lexer;
 import currencies.parser.Parser;
+import currencies.reader.CodeInput;
 import currencies.reader.CodeInputStream;
 import currencies.types.CCurrency;
 
@@ -32,5 +33,10 @@ class Util {
 
     static String getCaptured(ByteArrayOutputStream out){
         return out.toString();
+    }
+
+    static CodeInputStream codeInputStream(String s){
+        InputStream stream = new ByteArrayInputStream(s.getBytes(StandardCharsets.UTF_8));
+        return new CodeInputStream(stream);
     }
 }

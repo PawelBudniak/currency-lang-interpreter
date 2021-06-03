@@ -10,8 +10,8 @@ public class FileReader implements CodeInput {
 
     private RandomAccessFile file;
     private boolean isEOF;
-    private int lineNumber = 0;
-    private int charNumber = -1;
+    private int lineNumber = firstLineNumber;
+    private int charNumber = firstColumnNumber;
 
 
     public FileReader(RandomAccessFile f){
@@ -34,7 +34,7 @@ public class FileReader implements CodeInput {
             char c = (char)file.readByte();
             if (c == '\n'){
                 ++lineNumber;
-                charNumber = -1;
+                charNumber = firstColumnNumber - 1;
             }
             if (c != '\r' && c!= '\n'){
                 ++charNumber;
@@ -48,6 +48,36 @@ public class FileReader implements CodeInput {
         catch (IOException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public void printSurrounding(long filePos){
+        try {
+            long lineStart = findLineStart(filePos);
+            file.seek(lineStart);
+
+
+            long diff = filePos - lineStart;
+
+            String line = file.readLine();
+            String stripped = line.stripLeading();
+            long lenStripped = line.length() - stripped.length();
+            diff -= lenStripped;
+
+            System.out.println(stripped);
+            System.out.println(" ".repeat((int) diff-1) + "^");
+
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private long findLineStart(long filePos) throws IOException {
+        char c;
+         do {
+            file.seek(--filePos);
+            c = (char) file.readByte();
+        } while (c != '\n' && filePos > 0);
+        return filePos + 1;
     }
 
     @Override

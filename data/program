@@ -1,4 +1,3 @@
-
 number incr(number num){
     return num + 1;
 }
@@ -47,6 +46,7 @@ void printDouble (currency x){
 void main(){
     number x = 3;
     print('first number: ', x);
+    currency x = 10 gbp + 10 gbp + 20 gbp + 40 gbp + 10 pln;
 
     testfun(4 pln);
     print('x after: ', x);

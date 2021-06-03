@@ -1,12 +1,13 @@
 package currencies.reader;
 
 import java.io.*;
+import java.util.Objects;
 
 public class CodeInputStream implements CodeInput {
 
     private Reader reader;
-    private int lineNumber = 0;
-    private int charNumber = -1;
+    private int lineNumber = firstLineNumber;
+    private int charNumber = firstColumnNumber - 1;
     private boolean isEOF = false;
 
 
@@ -23,6 +24,7 @@ public class CodeInputStream implements CodeInput {
 
     @Override
     public char nextChar() {
+
         try {
             int r = reader.read();
 
@@ -35,7 +37,7 @@ public class CodeInputStream implements CodeInput {
 
             if (c == '\n') {
                 ++lineNumber;
-                charNumber = -1;
+                charNumber = firstColumnNumber - 1;
             }
             if (c != '\r' && c != '\n') {
                 ++charNumber;

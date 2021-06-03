@@ -4,7 +4,7 @@ import currencies.reader.CharPosition;
 
 import java.util.Objects;
 
-public class CString extends CType<CString> implements Comparable<CString>{
+public class CString extends CType<CString> implements Comparable<CString> {
 
     String string;
 

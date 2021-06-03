@@ -11,6 +11,11 @@ import currencies.types.CType;
 
 import java.util.List;
 
+//List<CType> operands;
+//'a', 3, true, 'a', true,
+//'a' + 3 +  true
+//
+
 public class ArithmeticExpression extends RValue {
     private List<RValue> operands;
     private List<Token> operators;

@@ -19,14 +19,22 @@ public class Main {
 
         CCurrency.loadExchangeRates("data/exchangeRates.json");
 
+        ErrorHandler errorHandler = new ErrorHandler();
 
 
         try (RandomAccessFile fp = new RandomAccessFile("data/program", "rw")){
 
-            Parser p = new Parser(new Lexer(new FileReader(fp)));
+             FileReader reader = new FileReader(fp);
+             Parser p = new Parser(new Lexer(reader));
+             errorHandler.setReader(reader);
 
-            Program program = p.parseProgram();
-            program.execute();
+             try {
+                 Program program = p.parseProgram();
+                 program.execute();
+             }catch (InterpreterException e){
+                 errorHandler.handle(e);
+             }
+
 //            Token token = lexer.getNextToken();
 //            while (token.getType() != TokenType.T_EOT) {
 //                System.out.println(token);
@@ -41,5 +49,7 @@ public class Main {
             e.printStackTrace();
         }
 
-   }
+
+
+    }
 }

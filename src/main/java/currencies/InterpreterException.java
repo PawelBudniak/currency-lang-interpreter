@@ -9,7 +9,7 @@ import currencies.reader.CharPosition;
 
 public class InterpreterException extends RuntimeException{
 
-    CharPosition position;
+    private CharPosition position;
 
     public InterpreterException(){
         super();
