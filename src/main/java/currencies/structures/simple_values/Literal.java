@@ -1,5 +1,6 @@
 package currencies.structures.simple_values;
 
+import currencies.executor.Scope;
 import currencies.types.CCurrency;
 import currencies.lexer.TokenType;
 import currencies.structures.expressions.RValue;
@@ -16,11 +17,15 @@ public class Literal extends RValue {
 
     @Override
     public String toString() {
-        return value.toString();
+        return value.debugStr();
     }
 
     @Override
-    public CType getValue() {
+    public CType getValue(Scope scope) {
+        return value;
+    }
+
+    public CType getValue(){
         return value;
     }
 }

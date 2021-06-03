@@ -1,3 +1,4 @@
+import currencies.executor.Scope;
 import currencies.parser.Parser;
 import currencies.structures.simple_values.Literal;
 import currencies.types.CBoolean;
@@ -17,42 +18,42 @@ public class TypesTest {
     void emptyStringTruthValue(){
         Parser p = Util.parserFromStringStream("''");
 
-        assertFalse(p.tryParseLiteral().truthValue());
+        assertFalse(p.tryParseLiteral().truthValue(Scope.empty()));
     }
 
     @Test
     void nonEmptyStringTruthValue(){
         Parser p = Util.parserFromStringStream("'aa'");
 
-        assertTrue(p.tryParseLiteral().truthValue());
+        assertTrue(p.tryParseLiteral().truthValue(Scope.empty()));
     }
 
     @Test
     void zeroNumberTruthValue(){
         Parser p = Util.parserFromStringStream("0.00");
 
-        assertFalse(p.tryParseLiteral().truthValue());
+        assertFalse(p.tryParseLiteral().truthValue(Scope.empty()));
     }
 
     @Test
     void nonZeroNumberTruthValue(){
         Parser p = Util.parserFromStringStream("0.02");
 
-        assertTrue(p.tryParseLiteral().truthValue());
+        assertTrue(p.tryParseLiteral().truthValue(Scope.empty()));
     }
 
     @Test
     void zeroCurrencyTruthValue(){
         Parser p = Util.parserFromStringStream("0.000 gbp");
 
-        assertFalse(p.tryParseLiteral().truthValue());
+        assertFalse(p.tryParseLiteral().truthValue(Scope.empty()));
     }
 
     @Test
     void nonZeroCurrencyTruthValue(){
         Parser p = Util.parserFromStringStream("0.003 gbp");
 
-        assertTrue(p.tryParseLiteral().truthValue());
+        assertTrue(p.tryParseLiteral().truthValue(Scope.empty()));
     }
 
     @Test

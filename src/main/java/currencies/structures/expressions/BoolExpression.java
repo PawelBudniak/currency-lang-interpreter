@@ -1,5 +1,6 @@
 package currencies.structures.expressions;
 
+import currencies.executor.Scope;
 import currencies.types.CBoolean;
 import currencies.types.CType;
 
@@ -23,11 +24,9 @@ public class BoolExpression extends RValue{
     }
 
     @Override
-    public CType getValue() {
-        if (operands.size() == 1) {
-            assert false: "one operand boolexpr shouldn't be possible";
-            return operands.get(0).getValue();
-        }
+    public CType getValue(Scope scope) {
+
+        assert operands.size() > 1;
 
 //        boolean value = operands.get(0).truthValue() || operands.get(1).truthValue();
 //        // break early if a true value was found
@@ -38,7 +37,7 @@ public class BoolExpression extends RValue{
 //        return new CBoolean(value);
 
         return operands.stream()
-                .reduce(new CBoolean(false), (currentVal, rValue) -> currentVal.or(rValue.truthValue()), CBoolean::or);
+                .reduce(new CBoolean(false), (currentVal, rValue) -> currentVal.or(rValue.truthValue(scope)), CBoolean::or);
 
     }
 

@@ -16,7 +16,7 @@ public class IfStatement implements Statement {
 
     @Override
     public void execute(Scope scope){
-        if (condition.getValue().truthValue()){
+        if (condition.truthValue(scope)){
             block.execute(scope);
         }
     }

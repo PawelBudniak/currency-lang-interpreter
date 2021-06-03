@@ -31,29 +31,31 @@ public class Assignment implements Statement{
     @Override
     public void execute(Scope scope){
 
-        CType assigningValue = value.getValue();
+        CType assigningValue = value.getValue(scope);
         Variable variable;
 
         //TODO: implicit cast na bool?
 
+        // declaration and initialization, e.g int x = 3;
         if (type != null){
             if (scope.getVariable(var.getName()) != null)
                 throw new ExecutionException("Trying to redefine variable: " + var.getName(), null);
 
             variable = new Variable(var.getName(), CType.typeOf(type.valueStr()));
+            variable.setValue(assigningValue);
             scope.newVariable(variable);
         }
 
+        // simple assignment, e.g x = 3;
         else {
             variable = scope.getVariable(var.getName());
             if (variable == null)
                 throw new ExecutionException("Trying to assign to undeclared variable", null);
+            variable.setValue(assigningValue);
+
         }
 
-        if (assigningValue.getClass() != variable.getType())
-            throw new ExecutionException("Can't assign " + assigningValue.getClass() + " to " + variable.getType(), null);
-
-        variable.setValue(value.getValue());
+        assert scope.getVariable(var.getName()) == variable;
     }
 
 

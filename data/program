@@ -1,0 +1,81 @@
+
+number incr(number num){
+    return num + 1;
+}
+
+number factorial(number n){
+    print('depth: ', n);
+    if (n == 0){
+        return 1;
+    }
+    #number ret = factorial(n-1);
+    #print('returned: ' ret);
+    return n * factorial(n-1);
+}
+
+number fib(number n){
+    if (n == 0 || n == 1){
+        return 1;
+    }
+
+     return fib(n-2) + fib(n-1);
+}
+
+number deep(){
+    if (true){
+        if (true){
+            return 3;
+        }
+        print('cienko');
+    }
+    print('cienko2');
+
+
+}
+
+
+void main(){
+    number x = 3;
+    print('first number: ', x);
+
+    number y = 0;
+    while (y < 5){
+        print(y);
+        y = incr(y);
+    }
+
+    currency polishWyplata = 2600 pln;
+
+    exchange from pln to gbp 0.25;
+
+    currency beka = [gbp] polishWyplata;
+    print('polish: ', polishWyplata);
+    print('beka: ', beka);
+
+    if (beka < 800 gbp){
+        print ('i wy tak zyjecie?');
+    }
+    if (beka >= 800 gbp){
+        print('polska superpower by 2050');
+    }
+    if (beka == 650 gbp){
+        print('ciekawe');
+    }
+
+    number testura = 2 + 2 * 3 + 1 + 1;
+    if (false || testura == 10){
+        print ('kozak ');
+    }
+
+    print('ostateczny test, factorial(6): ');
+    print(factorial(6));
+
+    print('test deep ' + deep());
+
+    number i = 0;
+    while (i < 10){
+        print(i, ': ', fib(i));
+        i = i + 1;
+    }
+
+}

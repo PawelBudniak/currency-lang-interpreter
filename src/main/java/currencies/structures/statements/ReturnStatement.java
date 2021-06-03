@@ -14,7 +14,7 @@ public class ReturnStatement implements Statement{
 
     @Override
     public void execute(Scope scope){
-        result = value.getValue();
+        result = value.getValue(scope);
     }
 
     public CType getResult(){

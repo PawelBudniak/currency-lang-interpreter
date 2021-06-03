@@ -1,5 +1,7 @@
 package currencies.structures;
 
+import currencies.executor.Scope;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -13,6 +15,17 @@ public class Program {
 
     public List<Function> getFunctions() {
         return functions;
+    }
+
+    public void execute(){
+        Scope scope = Scope.empty();
+
+        for (Function function: functions){
+            function.define(scope);
+        }
+
+        Function main = scope.getFunction("main");
+        main.call(scope);
     }
 
     @Override

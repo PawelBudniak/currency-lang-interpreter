@@ -1,22 +1,21 @@
 import currencies.executor.Scope;
-import currencies.structures.simple_values.Literal;
+import currencies.structures.simple_values.FunctionCall;
 import currencies.structures.simple_values.Variable;
 import currencies.structures.statements.Assignment;
+import currencies.structures.statements.Loop;
 import currencies.types.*;
 import currencies.ExecutionException;
-import currencies.lexer.Lexer;
 import currencies.parser.Parser;
-import currencies.reader.CodeInputStream;
 import currencies.structures.expressions.RValue;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
+import java.io.ByteArrayOutputStream;
+import java.io.PrintStream;
+import java.time.Duration;
+
 import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-
-import java.io.ByteArrayInputStream;
-import java.io.InputStream;
-import java.nio.charset.StandardCharsets;
 
 public class ExecutorTest {
 
@@ -28,7 +27,7 @@ public class ExecutorTest {
     @Test
     void ComparisonNumberTrue(){
         Parser p = Util.parserFromStringStream("5 > 3");
-        CType result = p.tryParseRValue().getValue();
+        CType result = p.tryParseRValue().getValue(Scope.empty());
 
         assertAll(
                 () -> assertTrue(result instanceof CBoolean),
@@ -39,7 +38,7 @@ public class ExecutorTest {
     @Test
     void ComparisonNumberFalse(){
         Parser p = Util.parserFromStringStream("5 <= 3");
-        CType result = p.tryParseRValue().getValue();
+        CType result = p.tryParseRValue().getValue(Scope.empty());
 
         assertAll(
                 () -> assertTrue(result instanceof CBoolean),
@@ -50,7 +49,7 @@ public class ExecutorTest {
     @Test
     void ComparisonStringTrue(){
         Parser p = Util.parserFromStringStream("'abc' <= 'bbc'");
-        CType result = p.tryParseRValue().getValue();
+        CType result = p.tryParseRValue().getValue(Scope.empty());
 
         assertAll(
                 () -> assertTrue( result instanceof CBoolean),
@@ -61,7 +60,7 @@ public class ExecutorTest {
     @Test
     void ComparisonStringFalse(){
         Parser p = Util.parserFromStringStream("'abc' > 'bbc'");
-        CType result = p.tryParseRValue().getValue();
+        CType result = p.tryParseRValue().getValue(Scope.empty());
 
         assertAll(
                 () -> assertTrue( result instanceof CBoolean),
@@ -72,7 +71,7 @@ public class ExecutorTest {
     @Test
     void ComparisonCurrencyTrue(){
         Parser p = Util.parserFromStringStream("10 pln > 7 pln");
-        CType result = p.tryParseRValue().getValue();
+        CType result = p.tryParseRValue().getValue(Scope.empty());
 
         assertAll(
                 () -> assertTrue(result instanceof CBoolean),
@@ -84,7 +83,7 @@ public class ExecutorTest {
         Parser p = Util.parserFromStringStream("10 pln > 7 gbp");
         RValue rValue = p.tryParseRValue();
 
-        assertThrows(ExecutionException.class, rValue::getValue, "Trying to compare different currency types without casting throws an error");
+        assertThrows(ExecutionException.class, () -> rValue.getValue(Scope.empty()), "Trying to compare different currency types without casting throws an error");
     }
 
 
@@ -94,7 +93,7 @@ public class ExecutorTest {
         Parser p = Util.parserFromStringStream("false && true");
         RValue rValue = p.tryParseRValue();
 
-        assertFalse(rValue.truthValue());
+        assertFalse(rValue.truthValue(Scope.empty()));
     }
 
     @Test
@@ -102,7 +101,7 @@ public class ExecutorTest {
         Parser p = Util.parserFromStringStream("true && 1");
         RValue rValue = p.tryParseRValue();
 
-        assertTrue(rValue.truthValue());
+        assertTrue(rValue.truthValue(Scope.empty()));
     }
 
     @Test
@@ -110,7 +109,7 @@ public class ExecutorTest {
         Parser p = Util.parserFromStringStream("true && true && true && true && false && true");
         RValue rValue = p.tryParseRValue();
 
-        assertFalse(rValue.truthValue());
+        assertFalse(rValue.truthValue(Scope.empty()));
     }
 
     @Test
@@ -118,7 +117,7 @@ public class ExecutorTest {
         Parser p = Util.parserFromStringStream("false || 0");
         RValue rValue = p.tryParseRValue();
 
-        assertFalse(rValue.truthValue());
+        assertFalse(rValue.truthValue(Scope.empty()));
     }
 
     @Test
@@ -126,7 +125,7 @@ public class ExecutorTest {
         Parser p = Util.parserFromStringStream("1 || false");
         RValue rValue = p.tryParseRValue();
 
-        assertTrue(rValue.truthValue());
+        assertTrue(rValue.truthValue(Scope.empty()));
     }
 
     @Test
@@ -134,7 +133,7 @@ public class ExecutorTest {
         Parser p = Util.parserFromStringStream("false || false || false || true || false || false");
         RValue rValue = p.tryParseRValue();
 
-        assertTrue(rValue.truthValue());
+        assertTrue(rValue.truthValue(Scope.empty()));
     }
 
     @Test
@@ -143,7 +142,7 @@ public class ExecutorTest {
         RValue rValue = p.tryParseRValue();
         CNumber expected = CNumber.fromStr("18");
 
-        assertEquals(expected, rValue.getValue());
+        assertEquals(expected, rValue.getValue(Scope.empty()));
     }
 
     @Test
@@ -152,7 +151,7 @@ public class ExecutorTest {
         RValue rValue = p.tryParseRValue();
         CNumber expected = CNumber.fromStr("2");
 
-        assertEquals(expected, rValue.getValue());
+        assertEquals(expected, rValue.getValue(Scope.empty()));
     }
 
     @Test
@@ -161,7 +160,7 @@ public class ExecutorTest {
         RValue rValue = p.tryParseRValue();
         CNumber expected = CNumber.fromStr("42");
 
-        assertEquals(expected, rValue.getValue());
+        assertEquals(expected, rValue.getValue(Scope.empty()));
     }
 
     @Test
@@ -170,7 +169,7 @@ public class ExecutorTest {
         RValue rValue = p.tryParseRValue();
         CNumber expected = CNumber.fromStr("2");
 
-        assertEquals(expected, rValue.getValue());
+        assertEquals(expected, rValue.getValue(Scope.empty()));
     }
 
     @Test
@@ -178,7 +177,7 @@ public class ExecutorTest {
         Parser p = Util.parserFromStringStream("8 gbp / 4 pln");
         RValue rValue = p.tryParseRValue();
 
-        assertThrows(ExecutionException.class, () -> rValue.getValue());
+        assertThrows(ExecutionException.class, () -> rValue.getValue(Scope.empty()));
     }
 
     @Test
@@ -186,7 +185,7 @@ public class ExecutorTest {
         Parser p = Util.parserFromStringStream("8 gbp * 4 gbp");
         RValue rValue = p.tryParseRValue();
 
-        assertThrows(ExecutionException.class, () ->  rValue.getValue());
+        assertThrows(ExecutionException.class, () ->  rValue.getValue(Scope.empty()));
     }
 
     @Test
@@ -195,7 +194,7 @@ public class ExecutorTest {
         RValue rValue = p.tryParseRValue();
         CCurrency expected = new CCurrency("32", "gbp");
 
-        assertEquals(expected, rValue.getValue());
+        assertEquals(expected, rValue.getValue(Scope.empty()));
     }
 
     @Test
@@ -204,7 +203,7 @@ public class ExecutorTest {
         RValue rValue = p.tryParseRValue();
         CCurrency expected = new CCurrency("2", "gbp");
 
-        assertEquals(expected, rValue.getValue());
+        assertEquals(expected, rValue.getValue(Scope.empty()));
     }
 
     @Test
@@ -217,7 +216,8 @@ public class ExecutorTest {
         Variable variable = scope.getVariable("a");
         assertAll(
                 () -> assertNotNull(variable),
-                () -> assertEquals(CNumber.fromStr("3.0"), variable.getValue())
+                () -> assertEquals(CNumber.fromStr("3.0"), variable.getSavedValue()),
+                () -> assertEquals(CNumber.fromStr("3.0"), scope.getVariable("a").getSavedValue(), "assignment should modify scope")
         );
     }
     @Test
@@ -230,7 +230,8 @@ public class ExecutorTest {
         Variable variable = scope.getVariable("a");
         assertAll(
                 () -> assertNotNull(variable),
-                () -> assertEquals(new CString("test"), variable.getValue())
+                () -> assertEquals(new CString("test"), variable.getSavedValue()),
+                () -> assertEquals(new CString("test"), scope.getVariable("a").getSavedValue(), "assignment should modify scope")
         );
     }
 
@@ -240,13 +241,16 @@ public class ExecutorTest {
         Parser p = Util.parserFromStringStream("a = 3.0;");
         Assignment assignment = (Assignment) p.tryParseAssignOrFunCall();
         Scope scope = Scope.empty();
-        scope.newVariable(new Variable("a", CType.typeOf("number")));
+        Variable initialVar = new Variable("a", CType.typeOf("number"));
+        initialVar.setValue(CNumber.fromStr("2"));
+        scope.newVariable(initialVar);
 
         assignment.execute(scope);
         Variable variable = scope.getVariable("a");
         assertAll(
                 () -> assertNotNull(variable),
-                () -> assertEquals(CNumber.fromStr("3.0"), variable.getValue())
+                () -> assertEquals(CNumber.fromStr("3.0"), variable.getSavedValue()),
+                () -> assertEquals(CNumber.fromStr("3.0"), scope.getVariable("a").getSavedValue(), "assignment should modify scope")
         );
     }
 
@@ -256,7 +260,10 @@ public class ExecutorTest {
         Assignment assignment = (Assignment) p.tryParseAssignOrFunCall();
         Scope scope = Scope.empty();
 
-        assertThrows(ExecutionException.class, () -> assignment.execute(scope));
+        assertAll(
+                () -> assertThrows(ExecutionException.class, () -> assignment.execute(scope)),
+                () -> assertNull(scope.getVariable("a"))
+        );
     }
 
     @Test
@@ -265,7 +272,10 @@ public class ExecutorTest {
         Assignment assignment = (Assignment) p.tryParseAssignOrFunCall();
         Scope scope = Scope.empty();
 
-        assertThrows(ExecutionException.class, () -> assignment.execute(scope));
+        assertAll(
+                () -> assertThrows(ExecutionException.class, () -> assignment.execute(scope)),
+                () -> assertNull(scope.getVariable("a"))
+        );
     }
 
     @Test
@@ -273,9 +283,14 @@ public class ExecutorTest {
         Parser p = Util.parserFromStringStream("a = 3.0;");
         Assignment assignment = (Assignment) p.tryParseAssignOrFunCall();
         Scope scope = Scope.empty();
-        scope.newVariable(new Variable("a", CType.typeOf("string")));
+        Variable existingVar = new Variable("a", CType.typeOf("string"));
+        existingVar.setValue(new CString("strVal"));
+        scope.newVariable(existingVar);
 
-        assertThrows(ExecutionException.class, () -> assignment.execute(scope));
+        assertAll(
+                () -> assertThrows(ExecutionException.class, () -> assignment.execute(scope)),
+                () -> assertEquals(new CString("strVal"), scope.getVariable("a").getSavedValue())
+        );
     }
 
     @Test
@@ -283,7 +298,7 @@ public class ExecutorTest {
         Parser p = Util.parserFromStringStream("-10.3;");
         RValue rValue = p.tryParseRValue();
 
-        assertEquals(CNumber.fromStr("-10.3"), rValue.getValue());
+        assertEquals(CNumber.fromStr("-10.3"), rValue.getValue(Scope.empty()));
     }
 
     @Test
@@ -291,7 +306,7 @@ public class ExecutorTest {
         Parser p = Util.parserFromStringStream("!true;");
         RValue rValue = p.tryParseRValue();
 
-        assertEquals(new CBoolean(false), rValue.getValue());
+        assertEquals(new CBoolean(false), rValue.getValue(Scope.empty()));
     }
 
     @Test
@@ -299,7 +314,7 @@ public class ExecutorTest {
         Parser p = Util.parserFromStringStream("[pln] 10 pln;");
         RValue rValue = p.tryParseRValue();
 
-        assertEquals(new CCurrency("10", "pln"), rValue.getValue());
+        assertEquals(new CCurrency("10", "pln"), rValue.getValue(Scope.empty()));
     }
 
     @Test
@@ -308,7 +323,7 @@ public class ExecutorTest {
         RValue rValue = p.tryParseRValue();
         CCurrency.setExchangeRate("pln", "gbp", CNumber.fromStr("0.2"));
 
-        assertEquals(new CCurrency("2.0", "gbp"), rValue.getValue());
+        assertEquals(new CCurrency("2.0", "gbp"), rValue.getValue(Scope.empty()));
     }
 
     @Test
@@ -316,7 +331,7 @@ public class ExecutorTest {
         Parser p = Util.parserFromStringStream("3.5 + 4.3");
         RValue rValue = p.tryParseRValue();
 
-        assertEquals(CNumber.fromStr("7.8"), rValue.getValue());
+        assertEquals(CNumber.fromStr("7.8"), rValue.getValue(Scope.empty()));
     }
 
     @Test
@@ -324,7 +339,7 @@ public class ExecutorTest {
         Parser p = Util.parserFromStringStream("3.5gbp + 4.3gbp");
         RValue rValue = p.tryParseRValue();
 
-        assertEquals(new CCurrency("7.8", "gbp"), rValue.getValue());
+        assertEquals(new CCurrency("7.8", "gbp"), rValue.getValue(Scope.empty()));
     }
 
     @Test
@@ -332,7 +347,7 @@ public class ExecutorTest {
         Parser p = Util.parserFromStringStream("3.5gbp + 4.3pln");
         RValue rValue = p.tryParseRValue();
 
-        assertThrows(ExecutionException.class, ()-> rValue.getValue());
+        assertThrows(ExecutionException.class, ()-> rValue.getValue(Scope.empty()));
     }
 
     @Test
@@ -343,11 +358,82 @@ public class ExecutorTest {
         RValue rValue2 = p2.tryParseRValue();
 
         assertAll(
-                () -> assertEquals(new CString("a35"), rValue.getValue()),
-                () -> assertEquals(new CString("35a"), rValue2.getValue())
+                () -> assertEquals(new CString("a35"), rValue.getValue(Scope.empty())),
+                () -> assertEquals(new CString("35a"), rValue2.getValue(Scope.empty()))
         );
 
     }
+
+    @Test
+    void usePreviouslyDefinedVariable(){
+        Parser p = Util.parserFromStringStream("a * 3");
+        RValue rValue = p.tryParseRValue();
+        Scope scope = Scope.empty();
+        scope.newVariable(new Variable("a", CType.typeOf("number"), CNumber.fromStr("5")));
+
+        assertEquals(CNumber.fromStr("15"), rValue.getValue(scope));
+    }
+
+    @Test
+    void useAssignedVariable(){
+        Parser p = Util.parserFromStringStream("number a = 5; a * 3");
+        Assignment assignment = (Assignment) p.tryParseAssignOrFunCall();
+        Scope scope = Scope.empty();
+        assignment.execute(scope);
+        RValue rValue = p.tryParseRValue();
+
+        assertEquals(CNumber.fromStr("15"), rValue.getValue(scope));
+    }
+
+    @Test
+    void printFunction(){
+        Parser p = Util.parserFromStringStream("print(23);");
+        FunctionCall funcall = (FunctionCall) p.tryParseAssignOrFunCall();
+
+        final ByteArrayOutputStream myOut = new ByteArrayOutputStream();
+        System.setOut(new PrintStream(myOut));
+
+        funcall.execute(Scope.empty());
+
+        final String stdOutResult = myOut.toString();
+
+        assertEquals("23\n", stdOutResult);
+    }
+
+    @Test
+    void printFunctionMultipleArgs(){
+        Parser p = Util.parserFromStringStream("print(23, 'a', 'b', 10 gbp);");
+        FunctionCall funcall = (FunctionCall) p.tryParseAssignOrFunCall();
+
+        final ByteArrayOutputStream myOut = new ByteArrayOutputStream();
+        System.setOut(new PrintStream(myOut));
+
+        funcall.execute(Scope.empty());
+
+        final String stdOutResult = myOut.toString();
+
+        assertEquals("23ab10gbp\n", stdOutResult);
+    }
+
+    @Test
+    void whileLoop(){
+        Parser p = Util.parserFromStringStream("number x = 0; while (x < 3) { x = x + 1;}");
+        Assignment assignment = (Assignment) p.tryParseAssignOrFunCall();
+        Scope scope = Scope.empty();
+        assignment.execute(scope);
+
+        Loop loop = p.tryParseLoop();
+        loop.execute(scope);
+
+        assertAll(
+                () -> assertTimeoutPreemptively(Duration.ofMillis(2000), () -> loop.execute(scope),
+                        "executing a 3-iteration while loop should take less than 2 seconds"),
+                () -> assertEquals(CNumber.fromStr("3"), scope.getVariable("x").getSavedValue())
+        );
+
+
+    }
+
 
 
 

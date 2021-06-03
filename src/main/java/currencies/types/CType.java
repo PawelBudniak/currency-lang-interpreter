@@ -53,4 +53,11 @@ public abstract class CType <T extends CType<T>> implements Comparable<T>{
     public String debugStr(){
         return this.toString();
     }
+
+
+    public static CType assign (CType value, Class<?> requiredType){
+        if (value.getClass() != requiredType)
+            throw new ExecutionException("Can't assign " + value.getClass() + " to " + requiredType, null);
+        return value;
+    }
 }

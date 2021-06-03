@@ -1,6 +1,7 @@
 package currencies.structures.expressions;
 
 import currencies.ExecutionException;
+import currencies.executor.Scope;
 import currencies.lexer.Token;
 import currencies.lexer.TokenType;
 import currencies.parser.Parser;
@@ -20,8 +21,8 @@ public class ArithmeticTerm extends RValue {
         this.operators = operators;
     }
 
-    public CType getValue(){
-        return applyOperators(operands, operators);
+    public CType getValue(Scope scope){
+        return applyOperators(operands, operators, scope);
     }
 
 //    public CType getValue(){

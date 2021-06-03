@@ -16,7 +16,7 @@ public class Loop implements Statement {
 
     @Override
     public void execute(Scope scope){
-        while (condition.getValue().truthValue()){
+        while (condition.getValue(scope).truthValue()){
             block.execute(scope);
         }
     }

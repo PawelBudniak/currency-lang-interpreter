@@ -74,15 +74,15 @@ public abstract class RValue {
         throw new UnsupportedOperationException();
     }
 
-    protected CType applyOperators(List<RValue> operands, List<Token> operators){
+    protected CType applyOperators(List<RValue> operands, List<Token> operators, Scope scope){
         if (operands.size() == 1) {
             assert false: "one operand expression shouldn't be possible";
-            return operands.get(0).getValue();
+            return operands.get(0).getValue(scope);
         }
 
-        CType value = applyOperator(operands.get(0).getValue(), operators.get(0), operands.get(1).getValue());
+        CType value = applyOperator(operands.get(0).getValue(scope), operators.get(0), operands.get(1).getValue(scope));
         for (int i = 2; i < operands.size(); i++) {
-            value = applyOperator(value, operators.get(i-1), operands.get(i).getValue());
+            value = applyOperator(value, operators.get(i-1), operands.get(i).getValue(scope));
         }
 
         return value;

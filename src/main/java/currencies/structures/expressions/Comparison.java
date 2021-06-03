@@ -1,6 +1,7 @@
 package currencies.structures.expressions;
 
 import currencies.ExecutionException;
+import currencies.executor.Scope;
 import currencies.executor.Utils;
 import currencies.lexer.Token;
 import currencies.lexer.TokenType;
@@ -22,12 +23,10 @@ public class Comparison extends RValue {
 
     private TokenType operatorType() { return operator.getType(); }
 
-    private static Set<TokenType> comparable = Set.of(TokenType.T_KW_STRING, TokenType.T_KW_NUMBER, TokenType.T_KW_CURRENCY);
-
     @Override
-    public CBoolean getValue() {
-        CType leftValue = leftOperand.getValue();
-        CType rightValue = rightOperand.getValue();
+    public CBoolean getValue(Scope scope) {
+        CType leftValue = leftOperand.getValue(scope);
+        CType rightValue = rightOperand.getValue(scope);
 
         Utils.requireSameTypes(leftValue, rightValue,"compare", operator.getPosition());
         Utils.requireSameCurrencyTypes(leftValue,rightValue,"compare", operator.getPosition());

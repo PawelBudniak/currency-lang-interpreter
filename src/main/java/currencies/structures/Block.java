@@ -26,6 +26,8 @@ public class Block {
 
     public void execute(Scope scope){
 
+        //TODO: shadowowanie zmiennych przy assignmentach here
+
         try {
             for (Statement statement : statements) {
                 statement.execute(scope);

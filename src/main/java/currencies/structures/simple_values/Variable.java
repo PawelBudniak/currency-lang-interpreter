@@ -1,6 +1,7 @@
 package currencies.structures.simple_values;
 
-import currencies.lexer.TokenType;
+import currencies.ExecutionException;
+import currencies.executor.Scope;
 import currencies.structures.expressions.RValue;
 import currencies.types.CType;
 
@@ -19,6 +20,12 @@ public class Variable extends RValue {
         this.type = type;
     }
 
+    public Variable(String name, Class<?> type, CType value) {
+        this.name = name;
+        this.type = type;
+        setValue(value);
+    }
+
     boolean isDefined(){
         return type == null;
     }
@@ -27,16 +34,27 @@ public class Variable extends RValue {
         return name;
     }
 
+    @Override
+    public CType getValue(Scope scope){
+        Variable lookedUpVal = scope.getVariable(name);
+        if (lookedUpVal == null)
+            throw new ExecutionException("Attempting to reference undefined variable", null);
+        return lookedUpVal.getSavedValue();
+    }
+
     public Class<?> getType() {
         return type;
     }
 
-    public CType getValue() {
+    public CType getSavedValue() {
         return value;
     }
 
     public void setValue(CType value) {
-        this.value = value;
+//        if (value.getClass() != this.getType())
+//            throw new ExecutionException("Can't assign " + value.getClass() + " to " + this.getType(), null);
+//        this.value = value;
+        this.value = CType.assign(value, type);
     }
 
     @Override
