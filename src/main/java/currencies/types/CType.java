@@ -43,11 +43,12 @@ public abstract class CType <T extends CType<T>> implements Comparable<T>{
     }
 
     public CType add(CType other, CharPosition position){
-
-        if (this instanceof CString || other instanceof CString)
-            return new CString(this.toString() + other.toString());
-
-        throw new ExecutionException("Cannot apply addition operator to types: " + this.getClass() + " and " + other.getClass(), position);
+        return defaultAdd(this, other, position);
+//
+//        if (this instanceof CString || other instanceof CString)
+//            return new CString(this.toString() + other.toString());
+//
+//        throw new ExecutionException("Cannot apply addition operator to types: " + this.getClass() + " and " + other.getClass(), position);
     }
 
     public String debugStr(){
@@ -60,4 +61,33 @@ public abstract class CType <T extends CType<T>> implements Comparable<T>{
             throw new ExecutionException("Can't assign " + value.getClass() + " to " + requiredType, null);
         return value;
     }
+
+    public CType subtract(CType other){
+        throw new ExecutionException("Cannot apply subtraction operator to types: " + this.getClass() + " and " + other.getClass(), null);
+    }
+
+    public CType subtract(CNumber other) {
+        throw new ExecutionException("Cannot apply subtraction operator to types: " + this.getClass() + " and " + other.getClass(), null);}
+
+    public CType subtract(CCurrency other) {
+        throw new ExecutionException("Cannot apply subtraction operator to types: " + this.getClass() + " and " + other.getClass(), null);
+    }
+
+    public CType add(CCurrency other, CharPosition position){
+        throw new ExecutionException("Cannot apply addition operator to types: " + this.getClass() + " and " + other.getClass(), position);
+    }
+
+    public CType add(CNumber other, CharPosition position){
+        return defaultAdd(other, this, position);
+        //throw new ExecutionException("Cannot apply addition operator to types: " + this.getClass() + " and " + other.getClass(), position);
+    }
+
+    private static CType defaultAdd(CType first, CType second, CharPosition position){
+        if (first instanceof CString || second instanceof CString)
+            return new CString(first.toString() + second.toString());
+
+        throw new ExecutionException("Cannot apply addition operator to types: " + first.getClass() + " and " + second.getClass(), position);
+    }
+
+
 }

@@ -16,18 +16,21 @@ public class CNumber extends CType<CNumber> implements Comparable<CNumber>{
 
 
     public CType add(CType other, CharPosition position){
-        if (other instanceof CNumber)
-            return this.add((CNumber)other);
-
-        return super.add(other,position);
+        return other.add(this, position);
     }
 
-    public CNumber add(CNumber other){
+    public CNumber add(CNumber other, CharPosition position){
         return new CNumber(number.add(other.getValue()));
     }
 
+    public CType subtract (CType other){
+        return other.subtract(this);
+    }
+
     public CNumber subtract(CNumber other){
-        return new CNumber(number.subtract(other.getValue()));
+        // negate is necessary because the operand order is reversed due to the double dispatch implemenation in method:
+        // subtract (CType other)
+        return new CNumber(number.subtract(other.getValue()).negate());
     }
 
     public CNumber multiply(CNumber other){

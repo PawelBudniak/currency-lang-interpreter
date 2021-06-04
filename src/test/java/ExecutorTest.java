@@ -338,6 +338,30 @@ public class ExecutorTest {
     }
 
     @Test
+    void numberSubtraction(){
+        Parser p = Util.parserFromStringStream("3.5 - 4.3");
+        RValue rValue = p.tryParseRValue();
+
+        assertEquals(CNumber.fromStr("-0.8"), rValue.getValue(Scope.empty()));
+    }
+
+    @Test
+    void currencyNumberSubtractionFails(){
+        Parser p = Util.parserFromStringStream("3.5 gbp - 4.3");
+        RValue rValue = p.tryParseRValue();
+
+        assertThrows(ExecutionException.class, () -> rValue.getValue(Scope.empty()));
+    }
+
+    @Test
+    void stringNumberSubtractionFails(){
+        Parser p = Util.parserFromStringStream("'str' - 4.3");
+        RValue rValue = p.tryParseRValue();
+
+        assertThrows(ExecutionException.class, () -> rValue.getValue(Scope.empty()));
+    }
+
+    @Test
     void currencyAdditionSameCodes(){
         Parser p = Util.parserFromStringStream("3.5gbp + 4.3gbp");
         RValue rValue = p.tryParseRValue();

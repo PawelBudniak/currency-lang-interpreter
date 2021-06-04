@@ -55,20 +55,30 @@ public class CCurrency extends CType<CCurrency> implements Comparable<CCurrency>
 
     @Override
     public CType add (CType other, CharPosition position){
-        if (other instanceof CCurrency){
-            Utils.requireSameCurrencyTypes(this,other,"add", position);
-            return this.add((CCurrency)other);
-        }
-        return super.add(other,position);
+
+        return other.add(this, position);
+
+//        if (other instanceof CCurrency){
+//            return this.add((CCurrency)other);
+//        }
+//        return super.add(other,position);
 
     }
 
-    public CCurrency add(CCurrency other){
-        return new CCurrency(value.add(other.getValue()), code);
+    public CCurrency add(CCurrency other, CharPosition position){
+        Utils.requireSameCurrencyTypes(this,other,"add", position);
+        return new CCurrency(value.add(other.getValue(), position), code);
+    }
+
+    public CType subtract (CType other){
+        return other.subtract(this);
     }
 
     public CCurrency subtract(CCurrency other){
-        return new CCurrency(value.subtract(other.getValue()), code);
+        // negate is necessary because the operand order is reversed due to the double dispatch implementation in method:
+        // subtract (CType other)
+        Utils.requireSameCurrencyTypes(other, this, "subtract", null);
+        return new CCurrency(value.subtract(other.getValue().negate()), code);
     }
 
     public CCurrency multiply(CNumber other){

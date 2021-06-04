@@ -43,17 +43,20 @@ public class ArithmeticExpression extends RValue {
 
     private static CType subtract(CType first, CType second, CharPosition position){
 
-        if (first instanceof CCurrency && second instanceof CCurrency){
-            if (!((CCurrency)first).codesEqual((CCurrency)second))
-                throw new ExecutionException("Cannot apply subtraction operator to currencies of different types", position);
-
-            return ((CCurrency)first).subtract((CCurrency)second);
-        }
-
-        if (first instanceof CNumber && second instanceof CNumber){
-            return ((CNumber)first).subtract((CNumber)second);
-        }
-        throw new ExecutionException("Cannot apply subtraction operator to types: " + first.getClass() + " and " + second.getClass(), position);
+        return first.subtract(second);
+//
+//        if (first instanceof CCurrency && second instanceof CCurrency){
+//            if (!((CCurrency)first).codesEqual((CCurrency)second))
+//                throw new ExecutionException("Cannot apply subtraction operator to currencies of different types", position);
+//
+//            return ((CCurrency)first).subtract((CCurrency)second);
+//        }
+//
+//        if (first instanceof CNumber && second instanceof CNumber){
+//            return first.subtract(second);
+//            //return ((CNumber)first).subtract((CNumber)second);
+//        }
+//        throw new ExecutionException("Cannot apply subtraction operator to types: " + first.getClass() + " and " + second.getClass(), position);
     }
 
 
