@@ -43,7 +43,7 @@ public class ArithmeticExpression extends RValue {
 
     private static CType subtract(CType first, CType second, CharPosition position){
 
-        return first.subtract(second);
+        return first.acceptSubtract(second);
 //
 //        if (first instanceof CCurrency && second instanceof CCurrency){
 //            if (!((CCurrency)first).codesEqual((CCurrency)second))

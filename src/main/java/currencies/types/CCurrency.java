@@ -49,7 +49,17 @@ public class CCurrency extends CType<CCurrency> implements Comparable<CCurrency>
         return code.toString().toLowerCase();
     }
 
-    public CNumber divide(CCurrency other){
+    public CType acceptDivide(CType other){
+        return other.visitDivide(this);
+    }
+
+    protected CType visitDivide(CCurrency other){
+        return other.divide(this);
+    }
+
+    public CNumber divide(CCurrency other)
+    {
+        Utils.requireSameCurrencyTypes(this, other, "divide", null);
         return value.divide(other.getValue());
     }
 
@@ -70,7 +80,15 @@ public class CCurrency extends CType<CCurrency> implements Comparable<CCurrency>
         return new CCurrency(value.add(other.getValue(), position), code);
     }
 
-    public CType subtract (CType other){
+//    public CType subtract (CType other){
+//        return other.subtract(this);
+//    }
+
+    public CType acceptSubtract(CType other){
+        return other.visitSubtract(this);
+    }
+
+    protected CType visitSubtract(CCurrency other){
         return other.subtract(this);
     }
 
@@ -78,7 +96,7 @@ public class CCurrency extends CType<CCurrency> implements Comparable<CCurrency>
         // negate is necessary because the operand order is reversed due to the double dispatch implementation in method:
         // subtract (CType other)
         Utils.requireSameCurrencyTypes(other, this, "subtract", null);
-        return new CCurrency(value.subtract(other.getValue().negate()), code);
+        return new CCurrency(value.subtract(other.getValue()), code);
     }
 
     public CCurrency multiply(CNumber other){

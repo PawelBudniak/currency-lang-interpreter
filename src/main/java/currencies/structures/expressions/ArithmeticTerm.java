@@ -109,21 +109,23 @@ public class ArithmeticTerm extends RValue {
 
 
     private static CType divide(CType first, CType second, CharPosition position){
-        if (first instanceof CCurrency && second instanceof CCurrency){
-            if (!((CCurrency)first).codesEqual((CCurrency)second))
-                throw new ExecutionException("Cannot apply multiplicative operator to currencies of different types", position);
 
-            return ((CCurrency)first).divide((CCurrency)second);
-        }
-
-        if (first instanceof CCurrency && second instanceof CNumber){
-            return ((CCurrency)first).divide((CNumber)second);
-        }
-
-        if (first instanceof CNumber && second instanceof CNumber){
-            return ((CNumber)first).divide((CNumber)second);
-        }
-        throw new ExecutionException("Cannot apply division operator to types: " + first.getClass() + " and " + second.getClass(), position);
+        return first.acceptDivide(second);
+//        if (first instanceof CCurrency && second instanceof CCurrency){
+//            if (!((CCurrency)first).codesEqual((CCurrency)second))
+//                throw new ExecutionException("Cannot apply multiplicative operator to currencies of different types", position);
+//
+//            return ((CCurrency)first).divide((CCurrency)second);
+//        }
+//
+//        if (first instanceof CCurrency && second instanceof CNumber){
+//            return ((CCurrency)first).divide((CNumber)second);
+//        }
+//
+//        if (first instanceof CNumber && second instanceof CNumber){
+//            return ((CNumber)first).divide((CNumber)second);
+//        }
+//        throw new ExecutionException("Cannot apply division operator to types: " + first.getClass() + " and " + second.getClass(), position);
     }
 
 

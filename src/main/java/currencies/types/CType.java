@@ -62,16 +62,28 @@ public abstract class CType <T extends CType<T>> implements Comparable<T>{
         return value;
     }
 
-    public CType subtract(CType other){
+    public CType acceptSubtract(CType other){
         throw new ExecutionException("Cannot apply subtraction operator to types: " + this.getClass() + " and " + other.getClass(), null);
     }
 
-    public CType subtract(CNumber other) {
-        throw new ExecutionException("Cannot apply subtraction operator to types: " + this.getClass() + " and " + other.getClass(), null);}
-
-    public CType subtract(CCurrency other) {
+    protected CType visitSubtract(CNumber other){
         throw new ExecutionException("Cannot apply subtraction operator to types: " + this.getClass() + " and " + other.getClass(), null);
     }
+
+    protected CType visitSubtract(CCurrency other){
+        throw new ExecutionException("Cannot apply subtraction operator to types: " + this.getClass() + " and " + other.getClass(), null);
+    }
+
+//    public CType subtract(CType other){
+//        throw new ExecutionException("Cannot apply subtraction operator to types: " + this.getClass() + " and " + other.getClass(), null);
+//    }
+//
+//    public CType subtract(CNumber other) {
+//        throw new ExecutionException("Cannot apply subtraction operator to types: " + this.getClass() + " and " + other.getClass(), null);}
+//
+//    public CType subtract(CCurrency other) {
+//        throw new ExecutionException("Cannot apply subtraction operator to types: " + this.getClass() + " and " + other.getClass(), null);
+//    }
 
     public CType add(CCurrency other, CharPosition position){
         throw new ExecutionException("Cannot apply addition operator to types: " + this.getClass() + " and " + other.getClass(), position);
@@ -87,6 +99,22 @@ public abstract class CType <T extends CType<T>> implements Comparable<T>{
             return new CString(first.toString() + second.toString());
 
         throw new ExecutionException("Cannot apply addition operator to types: " + first.getClass() + " and " + second.getClass(), position);
+    }
+
+    private static CType defaultDivide(CType first, CType second){
+        throw new ExecutionException("Cannot apply division operator to types: " + first.getClass() + " and " + second.getClass(), null);
+    }
+
+    public CType acceptDivide(CType other){
+        return defaultDivide(other, this);
+    }
+
+    protected CType visitDivide(CNumber other){
+        return defaultDivide(other, this);
+    }
+
+    protected CType visitDivide(CCurrency other){
+        return defaultDivide(other, this);
     }
 
 
