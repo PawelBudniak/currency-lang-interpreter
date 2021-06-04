@@ -1,31 +1,33 @@
 package currencies.structures.statements;
 
 import currencies.ExecutionException;
+import currencies.InterpreterException;
 import currencies.executor.Scope;
 import currencies.lexer.Token;
 import currencies.structures.expressions.RValue;
+import currencies.structures.simple_values.Identifier;
 import currencies.structures.simple_values.Variable;
 import currencies.types.CType;
 
 
 public class Assignment implements Statement{
     private Token type;
-    private Variable var;
+    private Identifier varId;
     private RValue value;
 
-    public Assignment(Token type, Variable var, RValue value) {
+    public Assignment(Token type, Identifier varId, RValue value) {
         this.type = type;
         //TODO: trzymac stringa a nie var w klasie
-        this.var = var;
+        this.varId = varId;
         this.value = value;
     }
 
     @Override
     public String toString() {
         if (type != null){
-            return type.valueStr() + " " + var + " = " + value +";";
+            return type.valueStr() + " " + varId + " = " + value +";";
         }
-        return var + " = " + value + ";";
+        return varId + " = " + value + ";";
     }
 
     @Override
@@ -36,25 +38,32 @@ public class Assignment implements Statement{
 
         //TODO: implicit cast na bool?
 
-        // declaration and initialization, e.g int x = 3;
-        if (type != null){
+        try {
+
+            // declaration and initialization, e.g int x = 3;
+            if (type != null) {
 
 
-            variable = new Variable(var.getName(), CType.typeOf(type.valueStr()));
-            variable.setValue(assigningValue);
-            scope.newVariable(variable);
+                variable = new Variable(varId, CType.typeOf(type.valueStr()));
+                variable.setValue(assigningValue);
+                scope.newVariable(variable);
+            }
+
+            // simple assignment, e.g x = 3;
+            else {
+                variable = scope.getVariable(varId.getName());
+                if (variable == null)
+                    throw new ExecutionException("Trying to assign to undeclared variable", varId.getPosition());
+                variable.setValue(assigningValue);
+
+            }
+        } catch (InterpreterException e){
+            if (e.getPosition() == null)
+                e.setPosition(varId.getPosition());
+            throw e;
         }
 
-        // simple assignment, e.g x = 3;
-        else {
-            variable = scope.getVariable(var.getName());
-            if (variable == null)
-                throw new ExecutionException("Trying to assign to undeclared variable", null);
-            variable.setValue(assigningValue);
-
-        }
-
-        assert scope.getVariable(var.getName()) == variable;
+        assert scope.getVariable(varId.getName()) == variable;
     }
 
 
@@ -63,8 +72,8 @@ public class Assignment implements Statement{
         return type;
     }
 
-    public Variable getVar() {
-        return var;
+    public Identifier getVarId() {
+        return varId;
     }
 
     public RValue getValue() {

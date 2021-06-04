@@ -6,6 +6,7 @@ import currencies.structures.Program;
 import currencies.structures.TypeAndId;
 import currencies.structures.expressions.*;
 import currencies.structures.simple_values.FunctionCall;
+import currencies.structures.simple_values.Identifier;
 import currencies.structures.simple_values.Literal;
 import currencies.structures.statements.*;
 import org.junit.jupiter.api.BeforeAll;
@@ -31,7 +32,7 @@ class ParserTest {
         Function f = p.tryParseFunction();
         assertAll(
                 () -> assertEquals(T_KW_VOID, f.getReturnType()),
-                () -> assertEquals("fun", f.getName()),
+                () -> assertEquals("fun", f.getId()),
                 () -> assertTrue(f.getArgDefList().isEmpty()),
                 () -> assertTrue(f.getBlock().getStatements().isEmpty())
         );
@@ -42,13 +43,15 @@ class ParserTest {
     void functionWithArgs() {
         Parser p = Util.parserFromStringStream("string func(number a, currency b) {}");
         Function f = p.tryParseFunction();
-        List<TypeAndId> args = List.of(new TypeAndId(new Token(T_KW_NUMBER, null), "a"), new TypeAndId(new Token(T_KW_CURRENCY, null), "b"));
+        List<TypeAndId> args = List.of
+                (new TypeAndId(new Token(T_KW_NUMBER, null), new Identifier("a", null)),
+                 new TypeAndId(new Token(T_KW_CURRENCY, null),  new Identifier("b", null)));
 
         assertAll(
                 () -> assertNotNull(f),
                 () -> assertEquals(T_KW_STRING, f.getReturnType()),
-                () -> assertEquals("func", f.getName()),
-                () -> assertEquals(f.getArgDefList(), args),
+                () -> assertEquals("func", f.getId()),
+                () -> assertEquals(args, f.getArgDefList()),
                 () -> assertTrue(f.getBlock().getStatements().isEmpty())
         );
 

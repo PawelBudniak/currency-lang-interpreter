@@ -2,14 +2,15 @@ package currencies.structures;
 
 import currencies.lexer.Token;
 import currencies.lexer.TokenType;
+import currencies.structures.simple_values.Identifier;
 
 import java.util.Objects;
 
 public class TypeAndId {
     Token typeToken;
-    String id;
+    Identifier id;
 
-    public TypeAndId(Token typeToken, String id) {
+    public TypeAndId(Token typeToken, Identifier id) {
         this.typeToken = typeToken;
         this.id = id;
     }
@@ -22,7 +23,7 @@ public class TypeAndId {
         return typeToken.getType();
     }
 
-    public String getId() {
+    public Identifier getId() {
         return id;
     }
 

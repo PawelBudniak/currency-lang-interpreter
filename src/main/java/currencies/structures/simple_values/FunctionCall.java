@@ -8,7 +8,6 @@ import currencies.structures.expressions.RValue;
 import currencies.structures.statements.Statement;
 import currencies.types.CType;
 
-import java.lang.reflect.Type;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -16,7 +15,7 @@ import java.util.Map;
 
 public class FunctionCall extends RValue implements Statement {
 
-    String functionName;
+    Identifier functionId;
     List<RValue> arguments;
     private boolean asStatement = false;
     private CType returnValue;
@@ -31,8 +30,8 @@ public class FunctionCall extends RValue implements Statement {
     }
 
 
-    public FunctionCall(String functionName, List<RValue> arguments) {
-        this.functionName = functionName;
+    public FunctionCall(Identifier functionId, List<RValue> arguments) {
+        this.functionId = functionId;
         this.arguments = arguments;
     }
 
@@ -42,7 +41,7 @@ public class FunctionCall extends RValue implements Statement {
         //TODO: jakis ogolny stdlib, typu Map<String, Executable> ?
 
         // built-in print function
-        if (functionName.equals("print")){
+        if (functionId.getName().equals("print")){
             for (RValue rValue: arguments){
                 System.out.print(rValue.getValue(scope));
             }
@@ -51,7 +50,7 @@ public class FunctionCall extends RValue implements Statement {
         }
 
         // user defined function
-        Function function = scope.getFunction(functionName);
+        Function function = scope.getFunction(functionId.getName());
         Map<String, Variable> args = matchArgLists(function, scope);
 
 
@@ -64,7 +63,7 @@ public class FunctionCall extends RValue implements Statement {
 
         int expectedSize = function.getArgDefList().size();
         if (arguments.size() != expectedSize)
-            throw new ExecutionException("Invalid number of arguments for function " + functionName + " expected: " +  expectedSize, null);
+            throw new ExecutionException("Invalid number of arguments for function " + functionId + " expected: " +  expectedSize, functionId.getPosition());
 
 
         Map<String, Variable> matchedArgs = new HashMap<>();
@@ -75,7 +74,7 @@ public class FunctionCall extends RValue implements Statement {
             TypeAndId expectedVar = expected.next();
 
             Variable var = new Variable(expectedVar.getId(), CType.typeOf(expectedVar.getTypeToken().valueStr()), val);
-            matchedArgs.put(expectedVar.getId(), var);
+            matchedArgs.put(expectedVar.getId().getName(), var);
         }
 
         return matchedArgs;
@@ -91,7 +90,7 @@ public class FunctionCall extends RValue implements Statement {
 
     @Override
     public String toString() {
-        StringBuilder str = new StringBuilder(functionName + "(");
+        StringBuilder str = new StringBuilder(functionId + "(");
 
         for (int i = 0; i < arguments.size(); ++i){
             str.append(arguments.get(i));

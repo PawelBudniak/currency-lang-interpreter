@@ -1,12 +1,10 @@
 package currencies.structures.expressions;
 
-import currencies.ExecutionException;
+import currencies.InterpreterException;
 import currencies.executor.Scope;
 import currencies.lexer.Token;
 import currencies.lexer.TokenType;
 import currencies.reader.CharPosition;
-import currencies.types.CCurrency;
-import currencies.types.CNumber;
 import currencies.types.CType;
 
 import java.util.List;
@@ -22,6 +20,8 @@ public class ArithmeticExpression extends RValue {
     private Object value;
 
     public ArithmeticExpression(List<RValue> operands, List<Token> operators) {
+        assert operands.size() > 0 && operators.size() == operands.size() - 1;
+
         this.operands = operands;
         this.operators = operators;
     }
@@ -33,35 +33,26 @@ public class ArithmeticExpression extends RValue {
 
     protected CType applyOperator (CType first, Token operator, CType second){
 
-        if (operator.getType() == TokenType.T_PLUS)
-            return add(first, second, operator.getPosition());
-        else
-            return subtract(first, second, operator.getPosition());
+        try {
+            if (operator.getType() == TokenType.T_PLUS)
+                return add(first, second);
+            else
+                return subtract(first, second);
+        } catch (InterpreterException e){
+            e.setPosition(operator.getPosition());
+            throw e;
+        }
 
     }
 
 
-    private static CType subtract(CType first, CType second, CharPosition position){
-
+    private static CType subtract(CType first, CType second){
         return first.acceptSubtract(second);
-//
-//        if (first instanceof CCurrency && second instanceof CCurrency){
-//            if (!((CCurrency)first).codesEqual((CCurrency)second))
-//                throw new ExecutionException("Cannot apply subtraction operator to currencies of different types", position);
-//
-//            return ((CCurrency)first).subtract((CCurrency)second);
-//        }
-//
-//        if (first instanceof CNumber && second instanceof CNumber){
-//            return first.subtract(second);
-//            //return ((CNumber)first).subtract((CNumber)second);
-//        }
-//        throw new ExecutionException("Cannot apply subtraction operator to types: " + first.getClass() + " and " + second.getClass(), position);
     }
 
 
-    private static CType add(CType first, CType second, CharPosition position){
-        return first.add(second, position);
+    private static CType add(CType first, CType second){
+        return first.acceptAdd(second);
     }
 
 

@@ -43,4 +43,13 @@ public class InterpreterException extends RuntimeException{
         return position;
     }
 
+    public void setPosition(CharPosition position) {
+        this.position = position;
+    }
+
+    public static void setPositionAndRethrow(InterpreterException e, CharPosition position){
+        if (e.getPosition() == null)
+            e.setPosition(position);
+        throw e;
+    }
 }

@@ -7,21 +7,21 @@ import currencies.types.CType;
 
 public class Variable extends RValue {
 
-    private String name;
+    private Identifier id;
     private CType value;
     private Class<?> type;
 
-    public Variable(String name) {
-        this.name = name;
+    public Variable(Identifier id) {
+        this.id = id;
     }
 
-    public Variable(String name, Class<?> type) {
-        this.name = name;
+    public Variable(Identifier id, Class<?> type) {
+        this.id = id;
         this.type = type;
     }
 
-    public Variable(String name, Class<?> type, CType value) {
-        this.name = name;
+    public Variable(Identifier id, Class<?> type, CType value) {
+        this.id = id;
         this.type = type;
         setValue(value);
     }
@@ -31,14 +31,17 @@ public class Variable extends RValue {
     }
 
     public String getName() {
-        return name;
+        return id.getName();
     }
+
+    public Identifier getId() { return id; }
+
 
     @Override
     public CType getValue(Scope scope){
-        Variable lookedUpVal = scope.getVariable(name);
+        Variable lookedUpVal = scope.getVariable(id.getName());
         if (lookedUpVal == null)
-            throw new ExecutionException("Attempting to reference undefined variable", null);
+            throw new ExecutionException("Attempting to reference undefined variable", id.getPosition());
         return lookedUpVal.getSavedValue();
     }
 
@@ -51,15 +54,12 @@ public class Variable extends RValue {
     }
 
     public void setValue(CType value) {
-//        if (value.getClass() != this.getType())
-//            throw new ExecutionException("Can't assign " + value.getClass() + " to " + this.getType(), null);
-//        this.value = value;
         this.value = CType.assign(value, type);
     }
 
     @Override
     public String toString() {
-        return name;
+        return id.getName();
     }
 
 }

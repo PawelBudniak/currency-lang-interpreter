@@ -77,7 +77,7 @@ public class Scope {
 
 
     public Function newFunction(Function fun){
-        return functions.put(fun.getName(), fun);
+        return functions.put(fun.getId(), fun);
     }
 
     public static Scope empty(){

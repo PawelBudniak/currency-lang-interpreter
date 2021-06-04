@@ -2,6 +2,7 @@ import currencies.executor.Scope;
 import currencies.structures.Function;
 import currencies.structures.Program;
 import currencies.structures.simple_values.FunctionCall;
+import currencies.structures.simple_values.Identifier;
 import currencies.structures.simple_values.Variable;
 import currencies.structures.statements.Assignment;
 import currencies.structures.statements.IfStatement;
@@ -201,6 +202,14 @@ public class ExecutorTest {
     }
 
     @Test
+    void MultiplicationIsCommutative(){
+        Parser p = Util.parserFromStringStream("8 gbp * 4 == 4 * 8 gbp");
+        RValue rValue = p.tryParseRValue();
+
+        assertTrue(rValue.truthValue(Scope.empty()));
+    }
+
+    @Test
     void currencyDivByScalar(){
         Parser p = Util.parserFromStringStream("8 gbp / 4 ");
         RValue rValue = p.tryParseRValue();
@@ -244,7 +253,7 @@ public class ExecutorTest {
         Parser p = Util.parserFromStringStream("a = 3.0;");
         Assignment assignment = (Assignment) p.tryParseAssignOrFunCall();
         Scope scope = Scope.empty();
-        Variable initialVar = new Variable("a", CType.typeOf("number"));
+        Variable initialVar = new Variable(new Identifier("a", null), CType.typeOf("number"));
         initialVar.setValue(CNumber.fromStr("2"));
         scope.newVariable(initialVar);
 
@@ -286,7 +295,7 @@ public class ExecutorTest {
         Parser p = Util.parserFromStringStream("a = 3.0;");
         Assignment assignment = (Assignment) p.tryParseAssignOrFunCall();
         Scope scope = Scope.empty();
-        Variable existingVar = new Variable("a", CType.typeOf("string"));
+        Variable existingVar = new Variable(new Identifier("a", null), CType.typeOf("string"));
         existingVar.setValue(new CString("strVal"));
         scope.newVariable(existingVar);
 
@@ -396,7 +405,7 @@ public class ExecutorTest {
         Parser p = Util.parserFromStringStream("a * 3");
         RValue rValue = p.tryParseRValue();
         Scope scope = Scope.empty();
-        scope.newVariable(new Variable("a", CType.typeOf("number"), CNumber.fromStr("5")));
+        scope.newVariable(new Variable(new Identifier("a", null), CType.typeOf("number"), CNumber.fromStr("5")));
 
         assertEquals(CNumber.fromStr("15"), rValue.getValue(scope));
     }

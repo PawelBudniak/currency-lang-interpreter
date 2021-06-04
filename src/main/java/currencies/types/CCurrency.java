@@ -9,15 +9,17 @@ import currencies.reader.CharPosition;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.Reader;
-import java.lang.reflect.Field;
 import java.util.*;
 import java.util.stream.Collectors;
 
 public class CCurrency extends CType<CCurrency> implements Comparable<CCurrency>{
-    public static final int CODE_LEN = 3;
+
+    private static Map<String, Map<String, CNumber>> exchangeRates;
+
 
     private CNumber value;
     private String code;
+
 
     public CCurrency(String strvalue, String code) {
         this.value = CNumber.fromStr(strvalue);
@@ -30,73 +32,21 @@ public class CCurrency extends CType<CCurrency> implements Comparable<CCurrency>
     }
 
 
-    @Override
-    public CNumber getValue() {
-        return value;
-    }
-
     /** False if 0 (any precision) */
     @Override
     public boolean truthValue(){
         return value.truthValue();
     }
 
-    public String getCode() {
-        return code;
-    }
-
-    public String getTypeStr(){
-        return code.toString().toLowerCase();
-    }
-
-    public CType acceptDivide(CType other){
-        return other.visitDivide(this);
-    }
-
-    protected CType visitDivide(CCurrency other){
-        return other.divide(this);
-    }
-
-    public CNumber divide(CCurrency other)
-    {
-        Utils.requireSameCurrencyTypes(this, other, "divide", null);
-        return value.divide(other.getValue());
-    }
-
-    @Override
-    public CType add (CType other, CharPosition position){
-
-        return other.add(this, position);
-
-//        if (other instanceof CCurrency){
-//            return this.add((CCurrency)other);
-//        }
-//        return super.add(other,position);
-
-    }
-
-    public CCurrency add(CCurrency other, CharPosition position){
-        Utils.requireSameCurrencyTypes(this,other,"add", position);
-        return new CCurrency(value.add(other.getValue(), position), code);
-    }
-
-//    public CType subtract (CType other){
-//        return other.subtract(this);
-//    }
-
-    public CType acceptSubtract(CType other){
-        return other.visitSubtract(this);
-    }
-
-    protected CType visitSubtract(CCurrency other){
-        return other.subtract(this);
-    }
 
     public CCurrency subtract(CCurrency other){
-        // negate is necessary because the operand order is reversed due to the double dispatch implementation in method:
-        // subtract (CType other)
         Utils.requireSameCurrencyTypes(other, this, "subtract", null);
         return new CCurrency(value.subtract(other.getValue()), code);
+    }
+
+    public CCurrency add(CCurrency other){
+        Utils.requireSameCurrencyTypes(this,other,"add", null);
+        return new CCurrency(value.add(other.getValue()), code);
     }
 
     public CCurrency multiply(CNumber other){
@@ -105,6 +55,12 @@ public class CCurrency extends CType<CCurrency> implements Comparable<CCurrency>
 
     public CCurrency divide(CNumber other){
         return new CCurrency(value.divide(other), code);
+    }
+
+    public CNumber divide(CCurrency other)
+    {
+        Utils.requireSameCurrencyTypes(this, other, "divide", null);
+        return value.divide(other.getValue());
     }
 
     @Override
@@ -130,39 +86,20 @@ public class CCurrency extends CType<CCurrency> implements Comparable<CCurrency>
     }
 
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        CCurrency currency = (CCurrency) o;
-        return Objects.equals(value, currency.value) &&
-                Objects.equals(code, currency.code);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(value, code);
-    }
-
-    @Override
-    public String toString() {
-        return value.toString() + code;
-    }
-
-
-    private static Map<String, Map<String, CNumber>> exchangeRates;
-
-    /** Returns true also for differing precision - same value comparisons, e.g. 0.00 [equals] 0.0,
-     * This is not the case for the default equals method
-      */
-    public boolean precisionlessEquals(CCurrency other){
-        return this.compareTo(other) == 0;
-    }
-
-
-
     public static void setExchangeRate(String codeFrom, String codeTo, CNumber rate){
         exchangeRates.get(codeFrom).put(codeTo,rate);
+    }
+
+
+    public static Set<String> allCodes (){
+        return exchangeRates.keySet();
+    }
+
+    @Override
+    public int compareTo(CCurrency other) {
+        Utils.requireSameCurrencyTypes(this, other,"compare", null);
+
+        return getValue().compareTo(other.getValue());
     }
 
     public static void loadExchangeRates(String file){
@@ -210,19 +147,79 @@ public class CCurrency extends CType<CCurrency> implements Comparable<CCurrency>
 
 
         } catch (IOException e) {
-            e.printStackTrace();
+            throw new RuntimeException("Problem with exchange rates file\n"+ e.getMessage(), e);
         }
 
     }
 
-    public static Set<String> allCodes (){
-        return exchangeRates.keySet();
+    public String getTypeStr(){
+        return code.toString().toLowerCase();
     }
 
     @Override
-    public int compareTo(CCurrency other) {
-        Utils.requireSameCurrencyTypes(this, other,"compare", null);
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        CCurrency currency = (CCurrency) o;
+        return Objects.equals(value, currency.value) &&
+                Objects.equals(code, currency.code);
+    }
 
-        return getValue().compareTo(other.getValue());
+    @Override
+    public int hashCode() {
+        return Objects.hash(value, code);
+    }
+
+    @Override
+    public String toString() {
+        return value.toString() + code;
+    }
+
+
+    public String getCode() {
+        return code;
+    }
+
+    @Override
+    public CNumber getValue() {
+        return value;
+    }
+
+    @Override
+    public CType acceptMultiply(CType other){
+        return other.visitMultiply(this);
+    }
+
+    @Override
+    protected CType visitMultiply(CNumber other){
+        return other.multiply(this);
+    }
+
+    @Override
+    public CType acceptAdd(CType other){
+        return other.visitAdd(this);
+    }
+
+    @Override
+    protected CType visitAdd (CCurrency other){ return other.add(this); }
+
+    @Override
+    public CType acceptDivide(CType other){
+        return other.visitDivide(this);
+    }
+
+    @Override
+    protected CType visitDivide(CCurrency other){
+        return other.divide(this);
+    }
+
+    @Override
+    public CType acceptSubtract(CType other){
+        return other.visitSubtract(this);
+    }
+
+    @Override
+    protected CType visitSubtract(CCurrency other){
+        return other.subtract(this);
     }
 }

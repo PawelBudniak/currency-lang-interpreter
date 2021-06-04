@@ -1,6 +1,5 @@
 package currencies.types;
 
-import currencies.ExecutionException;
 import currencies.reader.CharPosition;
 
 import java.math.BigDecimal;
@@ -15,50 +14,19 @@ public class CNumber extends CType<CNumber> implements Comparable<CNumber>{
 
 
 
-    public CType add(CType other, CharPosition position){
-        return other.add(this, position);
-    }
 
-    public CNumber add(CNumber other, CharPosition position){
+    public CNumber add(CNumber other){
         return new CNumber(number.add(other.getValue()));
     }
 
-    @Override
-    public CType acceptDivide(CType other){
-        return other.visitDivide(this);
-    }
-
-    protected CType visitDivide(CNumber other){
-        return other.divide(this);
-    }
-
-    protected CType visitDivide(CCurrency other){
-        return other.divide(this);
-    }
-
-    public CType acceptSubtract(CType other){
-        return other.visitSubtract(this);
-    }
-
-    protected CType visitSubtract(CNumber other){
-        return other.subtract(this);
-    }
-
-
-
-//    public CType subtract (CType other){
-//        return other.subtract(this);
-//    }
-
-    public CNumber subtract(CNumber other){
-        // negate is necessary because the operand order is reversed due to the double dispatch implemenation in method:
-        // subtract (CType other)
-        return new CNumber(number.subtract(other.getValue()));
-    }
+    public CNumber subtract(CNumber other){ return new CNumber(number.subtract(other.getValue())); }
 
     public CNumber multiply(CNumber other){
         return new CNumber(number.multiply(other.getValue()));
     }
+
+    public CCurrency multiply(CCurrency other) { return other.multiply(this); }
+
     public CNumber divide(CNumber other){
         return new CNumber(number.divide(other.getValue()));
     }
@@ -99,5 +67,51 @@ public class CNumber extends CType<CNumber> implements Comparable<CNumber>{
     public CNumber negate(){
         return new CNumber(number.negate());
     }
+
+
+
+    @Override
+    public CType acceptAdd(CType other){
+        return other.visitAdd(this);
+    }
+
+    @Override
+    protected CType visitAdd(CNumber other){
+        return other.add(this);
+    }
+
+    @Override
+    public CType acceptDivide(CType other){
+        return other.visitDivide(this);
+    }
+
+    @Override
+    protected CType visitDivide(CNumber other){
+        return other.divide(this);
+    }
+
+    @Override
+    protected CType visitDivide(CCurrency other){
+        return other.divide(this);
+    }
+
+    @Override
+    public CType acceptSubtract(CType other){
+        return other.visitSubtract(this);
+    }
+
+    @Override
+    protected CType visitSubtract(CNumber other){
+        return other.subtract(this);
+    }
+
+    @Override
+    public CType acceptMultiply(CType other) { return other.visitMultiply(this); }
+
+    @Override
+    protected CType visitMultiply(CNumber other) { return other.multiply(this); }
+
+    @Override
+    protected CType visitMultiply(CCurrency other) { return other.multiply(this); }
 
 }

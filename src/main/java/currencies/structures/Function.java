@@ -1,9 +1,11 @@
 package currencies.structures;
 
 import currencies.ExecutionException;
+import currencies.InterpreterException;
 import currencies.executor.Scope;
 import currencies.lexer.Token;
 import currencies.lexer.TokenType;
+import currencies.structures.simple_values.Identifier;
 import currencies.types.CType;
 
 import java.util.List;
@@ -12,14 +14,14 @@ import java.util.List;
 public class Function  {
 
     Token returnType;
-    String name;
+    Identifier id;
     List<TypeAndId> argDefList;
     Block block;
     CType returnedValue;
 
-    public Function(Token returnType, String name, List<TypeAndId> argDefList, Block block) {
+    public Function(Token returnType, Identifier id, List<TypeAndId> argDefList, Block block) {
         this.returnType = returnType;
-        this.name = name;
+        this.id = id;
         this.argDefList = argDefList;
         this.block = block;
     }
@@ -28,8 +30,8 @@ public class Function  {
         return returnType.getType();
     }
 
-    public String getName() {
-        return name;
+    public String getId() {
+        return id.getName();
     }
 
     public List<TypeAndId> getArgDefList() {
@@ -47,8 +49,8 @@ public class Function  {
     public void define(Scope scope){
         //TODO: overloading?
 
-        if (scope.getFunction(name) != null)
-            throw new ExecutionException("Function with name " + name + " is already defined", null);
+        if (scope.getFunction(getId()) != null)
+            throw new ExecutionException("Function with name " + id + " is already defined", id.getPosition());
 
         scope.newFunction(this);
     }
@@ -56,17 +58,21 @@ public class Function  {
     public void call(Scope scope){
         block.execute(scope);
         if (returnType.getType() != TokenType.T_KW_VOID)
-            returnedValue = CType.assign(block.getReturnedValue(), CType.typeOf(returnType.valueStr()));
+            try {
+                returnedValue = CType.assign(block.getReturnedValue(), CType.typeOf(returnType.valueStr()));
+            }catch (ExecutionException e){
+                InterpreterException.setPositionAndRethrow(e, block.getReturnStatementPosition());
+            }
         else{
             if (block.getReturnedValue() != null){
-                throw new ExecutionException("Attempting to return a value from void function", null);
+                throw new ExecutionException("Attempting to return a value from void function", block.getReturnStatementPosition());
             }
         }
     }
 
     @Override
     public String toString() {
-        StringBuilder str = new StringBuilder(returnType.valueStr() + " " +  name + "(");
+        StringBuilder str = new StringBuilder(returnType.valueStr() + " " + id + "(");
 
         for (int i = 0; i < argDefList.size(); ++i){
             str.append(argDefList.get(i));

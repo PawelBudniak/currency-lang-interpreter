@@ -2,6 +2,7 @@ package currencies.structures.statements;
 
 import currencies.ExecutionException;
 import currencies.executor.Scope;
+import currencies.reader.CharPosition;
 import currencies.structures.expressions.RValue;
 import currencies.types.CCurrency;
 import currencies.types.CNumber;
@@ -14,18 +15,20 @@ public class ExchangeDeclaration implements Statement {
     String from;
     String to;
     RValue value;
+    CharPosition position;
 
-    public ExchangeDeclaration(String from, String to, RValue value) {
+    public ExchangeDeclaration(String from, String to, RValue value, CharPosition position) {
         this.from = from;
         this.to = to;
         this.value = value;
+        this.position = position;
     }
 
     @Override
     public void execute(Scope scope){
         CType result = value.getValue(scope);
         if (!(result instanceof CNumber)){
-            throw new ExecutionException("Exchange rate must be a number", null);
+            throw new ExecutionException("Exchange rate must be a number", position);
         }
 
         CCurrency.setExchangeRate(from, to, (CNumber)result);

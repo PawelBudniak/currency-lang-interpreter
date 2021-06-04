@@ -43,10 +43,19 @@ void printDouble (currency x){
     print(2*x);
 }
 
+number badFunction(){
+    return 'string';
+}
+
 void main(){
     number x = 3;
     print('first number: ', x);
-    currency x = 10 gbp + 10 gbp + 20 gbp + 40 gbp + 10 pln;
+
+    # exchange from pln to gbp '3.0';
+    badFunction();
+
+    number x = 10 gbp + 10 gbp + 20 gbp + 40 gbp;
+
 
     testfun(4 pln);
     print('x after: ', x);

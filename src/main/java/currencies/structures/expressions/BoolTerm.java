@@ -11,6 +11,7 @@ public class BoolTerm extends RValue{
     private List<RValue> operands;
 
     public BoolTerm(List<RValue> operands) {
+        assert operands.size() > 0;
         this.operands = operands;
     }
 
@@ -18,25 +19,8 @@ public class BoolTerm extends RValue{
         return operands;
     }
 
-//    public static BoolTerm fromRValue(RValue rvalue){
-//        List<BoolFactor> operand = new ArrayList<>();
-//        operand.add(new BoolFactor(null, rvalue));
-//        return new BoolTerm(operand);
-//    }
-
-
     @Override
     public CType getValue(Scope scope) {
-
-        assert operands.size() > 1;
-//
-//        boolean value = operands.get(0).truthValue() && operands.get(1).truthValue();
-//        // break early if a false value was found
-//        for (int i = 2; i < operands.size() && value; i++) {
-//            value = operands.get(i).truthValue();
-//        }
-//
-//        return new CBoolean(value);
 
         return operands.stream()
                 .reduce(new CBoolean(true), (currentVal, rValue) -> currentVal.and(rValue.truthValue(scope)), CBoolean::and);

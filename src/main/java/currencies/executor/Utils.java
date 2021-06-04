@@ -1,5 +1,6 @@
 package currencies.executor;
 
+import currencies.InterpreterException;
 import currencies.types.CCurrency;
 import currencies.ExecutionException;
 import currencies.reader.CharPosition;
@@ -27,6 +28,4 @@ public class Utils {
             }
         }
     }
-
-
 }

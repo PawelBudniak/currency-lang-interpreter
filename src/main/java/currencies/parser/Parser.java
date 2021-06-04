@@ -1,5 +1,8 @@
 package currencies.parser;
 
+import com.sun.source.tree.IdentifierTree;
+import currencies.reader.CharPosition;
+import currencies.structures.simple_values.Identifier;
 import currencies.types.CBoolean;
 import currencies.types.CCurrency;
 import currencies.lexer.Lexer;
@@ -88,12 +91,11 @@ public class Parser {
 
         require(typeSpecifiers, T_KW_VOID);
         Token returnType = currentToken;
-
-        nextTokenThenRequire(T_IDENTIFIER);
-        String name = (String)currentToken.getValue();
-
-        nextTokenThenRequire(T_PAREN_OPEN);
         nextToken();
+
+        Identifier id = requireIdentifier();
+
+        requireThenNextToken(T_PAREN_OPEN);
 
         List<TypeAndId> args = parseArgDefList();
 
@@ -103,7 +105,7 @@ public class Parser {
         Block block = parseBlock();
         block.setFunctionBody(true);
 
-        return new Function(returnType, name, args, block);
+        return new Function(returnType, id, args, block);
     }
 
     public Block parseBlock(){
@@ -154,9 +156,8 @@ public class Parser {
             return null;
         else{
             Token typeSpec = currentToken;
-            nextTokenThenRequire(T_IDENTIFIER);
-            String id = (String)currentToken.getValue();
             nextToken();
+            Identifier id = requireIdentifier();
             return new TypeAndId(typeSpec, id);
         }
     }
@@ -164,6 +165,8 @@ public class Parser {
     public ExchangeDeclaration tryParseExchangeDeclaration(){
         if (currentToken.getType() != T_KW_EXCHANGE)
             return null;
+
+
 
         nextTokenThenRequire(T_KW_FROM);
         nextTokenThenRequire(T_CURRENCY_CODE);
@@ -174,6 +177,7 @@ public class Parser {
         String toCurrency = (String) currentToken.getValue();
         nextToken();
 
+        CharPosition position = currentToken.getPosition();
         RValue value = tryParseRValue();
         if (value == null)
             throw new SyntaxException("Value not found for exchange declaration statement", currentToken.getPosition());
@@ -181,7 +185,7 @@ public class Parser {
         requireThenNextToken(T_SEMICOLON);
 
 
-        return new ExchangeDeclaration(fromCurrency, toCurrency, value);
+        return new ExchangeDeclaration(fromCurrency, toCurrency, value, position);
     }
 
     public RValue tryParseRValue() {
@@ -278,12 +282,13 @@ public class Parser {
             return null;
 
         nextToken();
+        CharPosition position = currentToken.getPosition();
         RValue val = tryParseRValue();
         if (val == null)
             throw new SyntaxException("Expected an rvalue after return keyword", currentToken.getPosition());
 
         requireThenNextToken(T_SEMICOLON);
-        return new ReturnStatement(val);
+        return new ReturnStatement(val, position);
 
     }
 
@@ -396,7 +401,7 @@ public class Parser {
 
     public  RValue tryParseSimpleValue() {
 
-        String id = tryParseIdentifier();
+        Identifier id = tryParseIdentifier();
         if (id != null){
 
             FunctionCall funcall;
@@ -436,7 +441,7 @@ public class Parser {
     }
 
     // assumes the function id has already been parsed
-    public  FunctionCall tryParseRestOfFunctionCall(String name) {
+    public  FunctionCall tryParseRestOfFunctionCall(Identifier id) {
         if (currentToken.getType() != T_PAREN_OPEN)
             return null;
         nextToken();
@@ -456,7 +461,7 @@ public class Parser {
 
         requireThenNextToken(T_PAREN_CLOSE);
 
-        return new FunctionCall(name, args);
+        return new FunctionCall(id, args);
 
     }
 
@@ -512,7 +517,7 @@ public class Parser {
 
 
         // check for assignment without declaration or a funcall
-        String id = tryParseIdentifier();
+        Identifier id = tryParseIdentifier();
         if (id != null){
             Statement statement;
             if ((statement = tryParseRestOfAssign(id)) != null) {
@@ -532,17 +537,25 @@ public class Parser {
 
     }
 
-    private String tryParseIdentifier(){
+    private Identifier tryParseIdentifier(){
         if (currentToken.getType() != T_IDENTIFIER)
             return null;
-
-        String id = (String) currentToken.getValue();
-        nextToken();
-        return id;
-
+        return getIdFromToken();
     }
 
-    public Assignment tryParseRestOfAssign(Token varType, String varName){
+    private Identifier requireIdentifier(){
+        require(T_IDENTIFIER);
+        return getIdFromToken();
+    }
+
+    private Identifier getIdFromToken(){
+        String id = (String) currentToken.getValue();
+        CharPosition position = currentToken.getPosition();
+        nextToken();
+        return new Identifier(id, position);
+    }
+
+    public Assignment tryParseRestOfAssign(Token varType, Identifier varId){
         if (currentToken.getType() != T_ASSIGNMENT)
             return null;
         nextToken();
@@ -551,10 +564,10 @@ public class Parser {
         if (value == null)
             throw new SyntaxException("No valid rvalue found after assignment operator", currentToken.getPosition());
 
-        return new Assignment(varType, new Variable(varName), value);
+        return new Assignment(varType, varId, value);
     }
 
-    public Assignment tryParseRestOfAssign(String varName){
+    public Assignment tryParseRestOfAssign(Identifier varName){
         return tryParseRestOfAssign(null, varName);
     }
 

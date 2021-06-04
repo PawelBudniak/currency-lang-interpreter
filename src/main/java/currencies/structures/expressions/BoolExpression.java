@@ -11,6 +11,7 @@ public class BoolExpression extends RValue{
     private boolean value;
 
     public BoolExpression(List<RValue> operands) {
+        assert operands.size() > 0;
         this.operands = operands;
     }
 
@@ -25,17 +26,6 @@ public class BoolExpression extends RValue{
 
     @Override
     public CType getValue(Scope scope) {
-
-        assert operands.size() > 1;
-
-//        boolean value = operands.get(0).truthValue() || operands.get(1).truthValue();
-//        // break early if a true value was found
-//        for (int i = 2; i < operands.size() && !value; i++) {
-//            value = operands.get(i).truthValue() || value;
-//        }
-//
-//        return new CBoolean(value);
-
         return operands.stream()
                 .reduce(new CBoolean(false), (currentVal, rValue) -> currentVal.or(rValue.truthValue(scope)), CBoolean::or);
 

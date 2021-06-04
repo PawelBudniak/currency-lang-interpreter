@@ -76,7 +76,6 @@ public abstract class RValue {
 
     protected CType applyOperators(List<RValue> operands, List<Token> operators, Scope scope){
         if (operands.size() == 1) {
-            assert false: "one operand expression shouldn't be possible";
             return operands.get(0).getValue(scope);
         }
 

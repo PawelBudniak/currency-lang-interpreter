@@ -2,6 +2,7 @@ package currencies.structures;
 
 import currencies.executor.ReturnStatementException;
 import currencies.executor.Scope;
+import currencies.reader.CharPosition;
 import currencies.structures.statements.Statement;
 import currencies.types.CType;
 
@@ -11,6 +12,7 @@ public class Block {
     private List<Statement> statements;
     private CType returnedValue;
     private boolean isFunctionBody = false;
+    private CharPosition returnStatementPosition;
 
     public Block(List<Statement> statements) {
         this.statements = statements;
@@ -39,6 +41,7 @@ public class Block {
             catch (ReturnStatementException ex){
                 if (isFunctionBody) {
                     returnedValue = ex.getReturnedValue();
+                    returnStatementPosition = ex.getPosition();
                     break;
                 }
                 else {
@@ -55,6 +58,10 @@ public class Block {
 
     public CType getReturnedValue() {
         return returnedValue;
+    }
+
+    public CharPosition getReturnStatementPosition() {
+        return returnStatementPosition;
     }
 
     @Override

@@ -1,6 +1,7 @@
 package currencies.structures.expressions;
 
 import currencies.ExecutionException;
+import currencies.InterpreterException;
 import currencies.executor.Scope;
 import currencies.executor.Utils;
 import currencies.lexer.Token;
@@ -8,7 +9,6 @@ import currencies.lexer.TokenType;
 import currencies.types.CBoolean;
 import currencies.types.CType;
 
-import java.util.Set;
 
 public class Comparison extends RValue {
     private RValue rightOperand;
@@ -30,8 +30,13 @@ public class Comparison extends RValue {
 
         Utils.requireSameTypes(leftValue, rightValue,"compare", operator.getPosition());
 
-
-        int result = leftValue.compareTo(rightValue);
+        int result;
+        try {
+            result = leftValue.compareTo(rightValue);
+        } catch (InterpreterException e){
+            e.setPosition(operator.getPosition());
+            throw e;
+        }
 
 
         switch (operatorType()){

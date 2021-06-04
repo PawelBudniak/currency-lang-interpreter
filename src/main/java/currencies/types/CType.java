@@ -2,7 +2,6 @@ package currencies.types;
 
 
 import currencies.ExecutionException;
-import currencies.reader.CharPosition;
 
 import java.util.Map;
 import java.util.Objects;
@@ -10,8 +9,20 @@ import static java.util.Map.entry;
 
 public abstract class CType <T extends CType<T>> implements Comparable<T>{
 
+    private static final Map<String, Class<?>> typeMap = Map.ofEntries(
+            entry("string", CString.class),
+            entry("number", CNumber.class),
+            entry("bool", CBoolean.class),
+            entry("currency", CCurrency.class)
+    );
+
+
     public abstract boolean truthValue();
     public abstract Object getValue();
+
+    public String debugStr(){
+        return this.toString();
+    }
 
     @Override
     public String toString() {
@@ -27,34 +38,6 @@ public abstract class CType <T extends CType<T>> implements Comparable<T>{
         return typeMap.get(s);
     }
 
-    private static final Map<String, Class<?>> typeMap = Map.ofEntries(
-            entry("string", CString.class),
-            entry("number", CNumber.class),
-            entry("bool", CBoolean.class),
-            entry("currency", CCurrency.class)
-    );
-
-    public CType negate(){
-        throw new ExecutionException("Cannot negate type: " + this.getClass(), null);
-    }
-
-    public CCurrency currencyCast(String targetCode){
-        throw new ExecutionException("Cannot cast to currency type: " + this.getClass(), null);
-    }
-
-    public CType add(CType other, CharPosition position){
-        return defaultAdd(this, other, position);
-//
-//        if (this instanceof CString || other instanceof CString)
-//            return new CString(this.toString() + other.toString());
-//
-//        throw new ExecutionException("Cannot apply addition operator to types: " + this.getClass() + " and " + other.getClass(), position);
-    }
-
-    public String debugStr(){
-        return this.toString();
-    }
-
 
     public static CType assign (CType value, Class<?> requiredType){
         if (value.getClass() != requiredType)
@@ -62,51 +45,68 @@ public abstract class CType <T extends CType<T>> implements Comparable<T>{
         return value;
     }
 
-    public CType acceptSubtract(CType other){
-        throw new ExecutionException("Cannot apply subtraction operator to types: " + this.getClass() + " and " + other.getClass(), null);
+    public CType negate(){
+        throw new ExecutionException("Cannot negate type: " + this.getClass(), null);
     }
 
-    protected CType visitSubtract(CNumber other){
-        throw new ExecutionException("Cannot apply subtraction operator to types: " + this.getClass() + " and " + other.getClass(), null);
-    }
 
-    protected CType visitSubtract(CCurrency other){
-        throw new ExecutionException("Cannot apply subtraction operator to types: " + this.getClass() + " and " + other.getClass(), null);
-    }
-
-//    public CType subtract(CType other){
-//        throw new ExecutionException("Cannot apply subtraction operator to types: " + this.getClass() + " and " + other.getClass(), null);
-//    }
-//
-//    public CType subtract(CNumber other) {
-//        throw new ExecutionException("Cannot apply subtraction operator to types: " + this.getClass() + " and " + other.getClass(), null);}
-//
-//    public CType subtract(CCurrency other) {
-//        throw new ExecutionException("Cannot apply subtraction operator to types: " + this.getClass() + " and " + other.getClass(), null);
-//    }
-
-    public CType add(CCurrency other, CharPosition position){
-        throw new ExecutionException("Cannot apply addition operator to types: " + this.getClass() + " and " + other.getClass(), position);
-    }
-
-    public CType add(CNumber other, CharPosition position){
-        return defaultAdd(other, this, position);
-        //throw new ExecutionException("Cannot apply addition operator to types: " + this.getClass() + " and " + other.getClass(), position);
-    }
-
-    private static CType defaultAdd(CType first, CType second, CharPosition position){
+    private static CType defaultAdd(CType first, CType second){
         if (first instanceof CString || second instanceof CString)
             return new CString(first.toString() + second.toString());
 
-        throw new ExecutionException("Cannot apply addition operator to types: " + first.getClass() + " and " + second.getClass(), position);
+        throw new ExecutionException("Cannot apply addition operator to types: " + first.getClass() + " and " + second.getClass(), null);
     }
 
     private static CType defaultDivide(CType first, CType second){
         throw new ExecutionException("Cannot apply division operator to types: " + first.getClass() + " and " + second.getClass(), null);
     }
 
+    public static CType defaultSubtract(CType first, CType second){
+        throw new ExecutionException("Cannot apply subtraction operator to types: " + first.getClass() + " and " + second.getClass(), null);
+    }
+
+    public static CType defaultMultiply(CType first, CType second){
+        throw new ExecutionException("Cannot apply multiplication operator to types: " + first.getClass() + " and " + second.getClass(), null);
+    }
+
+    public CCurrency currencyCast(String targetCode){
+        throw new ExecutionException("Cannot cast to currency type: " + this.getClass(), null);
+    }
+
+
+
+    public CType acceptMultiply(CType other){
+        return defaultMultiply(this, other);
+    }
+
+    protected CType visitMultiply(CNumber other){
+        return defaultMultiply(other, this);
+    }
+
+    protected CType visitMultiply(CCurrency other){
+        return defaultMultiply(other, this);
+    }
+
+    public CType acceptSubtract(CType other){
+        return defaultSubtract(this, other);
+    }
+
+    protected CType visitSubtract(CNumber other){ return defaultSubtract(other, this); }
+
+    protected CType visitSubtract(CCurrency other){ return defaultSubtract(other, this); }
+
+    public CType acceptAdd(CType other){
+        return defaultAdd(this, other);
+    }
+
+    protected CType visitAdd(CCurrency other){ return defaultAdd(other, this); }
+
+    protected CType visitAdd(CNumber other){
+        return defaultAdd(other, this);
+    }
+
     public CType acceptDivide(CType other){
-        return defaultDivide(other, this);
+        return defaultDivide(this, other);
     }
 
     protected CType visitDivide(CNumber other){
