@@ -1,9 +1,9 @@
 package currencies.structures.expressions;
 
-import currencies.ExecutionException;
-import currencies.InterpreterException;
-import currencies.executor.Scope;
-import currencies.executor.Utils;
+import currencies.execution.ExecutionException;
+import currencies.error.InterpreterException;
+import currencies.execution.Scope;
+import currencies.execution.Utils;
 import currencies.lexer.Token;
 import currencies.lexer.TokenType;
 import currencies.types.CBoolean;

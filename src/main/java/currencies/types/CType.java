@@ -1,7 +1,7 @@
 package currencies.types;
 
 
-import currencies.ExecutionException;
+import currencies.execution.ExecutionException;
 
 import java.util.Map;
 import java.util.Objects;

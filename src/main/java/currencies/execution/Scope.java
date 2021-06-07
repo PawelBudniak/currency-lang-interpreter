@@ -1,6 +1,5 @@
-package currencies.executor;
+package currencies.execution;
 
-import currencies.ExecutionException;
 import currencies.structures.Function;
 import currencies.structures.simple_values.Variable;
 
@@ -14,6 +13,7 @@ public class Scope {
     private boolean representsFunCallArgs = false;
 
     public void enterNewLocalScope(){
+        // thanks to this check we can treat funcall arguments as standard local variables (so they can't be redefined)
         if (representsFunCallArgs)
             representsFunCallArgs = false;
         else
@@ -32,6 +32,8 @@ public class Scope {
 
         Iterator<Map<String, Variable>> iterator = subScopes.descendingIterator();
 
+        // iterate over scopes starting from the "most local"
+        // this allows for shadowing variables from outer blocks
         while(iterator.hasNext()) {
             Variable found = iterator.next().get(id);
             if (found != null) {
@@ -48,16 +50,7 @@ public class Scope {
         currentLocalScope().put(newVar.getName(), newVar);
     }
 
-//    void fun(bool x){
-//        if (true){
-//            if (true){
-//                fun(!x);
-//            }
-//        }
-//        return false;
-
- //   }
-    public Scope newFunCallScope(Map<String, Variable> args){
+    public Scope enterNewFunCallScope(Map<String, Variable> args){
         Scope newScope =  new Scope(args, functions);
         newScope.representsFunCallArgs = true;
         return newScope;
@@ -85,47 +78,4 @@ public class Scope {
     }
 
     public Function getFunction(String id) { return functions.get(id); }
-
-
-
-//
-//
-//    private Map<String, Variable> variables = new HashMap<>();
-//    private Map<String, Function> functions = new HashMap<>();
-//
-//
-//
-//    public Scope(Map<String, Variable> variables, Map<String, Function> functions) {
-//        this.variables = variables;
-//        this.functions = functions;
-//    }
-//
-//
-//
-//    public Scope newVariableSet(Map<String, Variable> newVariables){
-//        return new Scope(newVariables, functions);
-//    }
-//
-//    public Scope(Map<String, Function> functions) {
-//        this.functions = functions;
-//    }
-//
-//    private Scope() {}
-//
-//    public Variable getVariable(String id){ return variables.get(id); }
-//    public Function getFunction(String id) { return functions.get(id); }
-//
-//
-//    public static Scope empty(){
-//        return new Scope();
-//    }
-//
-//    public Variable newVariable(Variable var){
-//        return variables.put(var.getName(), var);
-//    }
-
-
-
-
-
 }

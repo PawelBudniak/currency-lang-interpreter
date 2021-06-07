@@ -1,7 +1,7 @@
 package currencies.structures.statements;
 
-import currencies.executor.Scope;
-import currencies.executor.ReturnStatementException;
+import currencies.execution.Scope;
+import currencies.execution.ReturnStatementException;
 import currencies.reader.CharPosition;
 import currencies.structures.expressions.RValue;
 import currencies.types.CType;

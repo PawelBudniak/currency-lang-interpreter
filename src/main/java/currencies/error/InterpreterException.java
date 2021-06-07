@@ -1,4 +1,4 @@
-package currencies;
+package currencies.error;
 
 import currencies.reader.CharPosition;
 //

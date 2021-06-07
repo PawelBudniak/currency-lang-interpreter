@@ -1,8 +1,11 @@
-package currencies.executor;
+package currencies.execution;
 
 import currencies.reader.CharPosition;
 import currencies.types.CType;
 
+/** Thrown when a return statement is executed, so the main function Block can be found easily.
+ *  Contains information about the returned value and the position of the return statement.
+ */
 public class ReturnStatementException extends RuntimeException{
     CType returnedValue;
     CharPosition position;

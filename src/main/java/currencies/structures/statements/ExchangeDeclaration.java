@@ -1,14 +1,12 @@
 package currencies.structures.statements;
 
-import currencies.ExecutionException;
-import currencies.executor.Scope;
+import currencies.execution.ExecutionException;
+import currencies.execution.Scope;
 import currencies.reader.CharPosition;
 import currencies.structures.expressions.RValue;
 import currencies.types.CCurrency;
 import currencies.types.CNumber;
 import currencies.types.CType;
-
-import java.util.Currency;
 
 public class ExchangeDeclaration implements Statement {
 

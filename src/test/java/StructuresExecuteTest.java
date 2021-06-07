@@ -1,4 +1,4 @@
-import currencies.executor.Scope;
+import currencies.execution.Scope;
 import currencies.structures.Function;
 import currencies.structures.Program;
 import currencies.structures.simple_values.FunctionCall;
@@ -8,7 +8,7 @@ import currencies.structures.statements.Assignment;
 import currencies.structures.statements.IfStatement;
 import currencies.structures.statements.Loop;
 import currencies.types.*;
-import currencies.ExecutionException;
+import currencies.execution.ExecutionException;
 import currencies.parser.Parser;
 import currencies.structures.expressions.RValue;
 import org.junit.jupiter.api.BeforeAll;
@@ -17,11 +17,12 @@ import org.junit.jupiter.api.Test;
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 import java.time.Duration;
+import java.util.Scanner;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class ExecutorTest {
+public class StructuresExecuteTest {
 
     @BeforeAll
     static void loadCurrencies(){
@@ -83,7 +84,7 @@ public class ExecutorTest {
         );
     }
     @Test
-    void ComparisonCurrencyDifferentCodes(){
+    void ComparisonCurrencyDifferentCodesIsPossible(){
         Parser p = Util.parserFromStringStream("10 pln > 7 gbp");
         RValue rValue = p.tryParseRValue();
 
@@ -561,6 +562,29 @@ public class ExecutorTest {
         assertEquals("10\n0\n", stdout);
     }
 
+
+
+    @Test
+    void outerVariablesCanBeChangedFromInnerBlocks(){
+        Parser p = Util.parserFromStringStream(
+                "void main(){" +
+                        "    number x = 0;" +
+                        "    if (!x){" +
+                        "        x = 10;" +
+                        "        print(x);" +
+                        "    }" +
+                        "    print(x);" +
+                        "}"
+        );
+        Program program = p.parseProgram();
+
+        ByteArrayOutputStream stream = Util.beginCaptureStdout();
+        program.execute();
+        String stdout = Util.getCaptured(stream);
+
+        assertEquals("10\n10\n", stdout);
+    }
+
     @Test
     void recursiveFunctionsWork(){
         Parser p = Util.parserFromStringStream(
@@ -599,6 +623,27 @@ public class ExecutorTest {
 
         assertThrows(ExecutionException.class, () -> functionCall.execute(scope));
 
+    }
+
+    @Test
+    void functionParametersArePassedByCopy(){
+        Parser p = Util.parserFromStringStream(
+                "void tryReassign(number n){" +
+                        "    n = 29;" +
+                        "}" +
+                        "number n = 5;" +
+                        "tryReassign(n);"
+        );
+        Function function = p.tryParseFunction();
+        Assignment assignment = (Assignment) p.tryParseAssignOrFunCall();
+        FunctionCall functionCall = (FunctionCall) p.tryParseAssignOrFunCall();
+        Scope scope = Scope.empty();
+
+        scope.newFunction(function);
+        assignment.execute(scope);
+        functionCall.execute(scope);
+
+        assertEquals(CNumber.fromStr("5"), scope.getVariable("n").getSavedValue());
     }
 
 

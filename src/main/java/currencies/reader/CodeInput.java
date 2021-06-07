@@ -9,7 +9,6 @@ public interface CodeInput {
     int firstLineNumber = 1;
     int firstColumnNumber = 1;
 
-    //TODO: fix this
     CharPosition getPosition();
     char nextChar();
     boolean hasNext();

@@ -1,8 +1,8 @@
 package currencies.structures;
 
-import currencies.ExecutionException;
-import currencies.InterpreterException;
-import currencies.executor.Scope;
+import currencies.execution.ExecutionException;
+import currencies.error.InterpreterException;
+import currencies.execution.Scope;
 import currencies.lexer.Token;
 import currencies.lexer.TokenType;
 import currencies.structures.simple_values.Identifier;
@@ -10,7 +10,6 @@ import currencies.types.CType;
 
 import java.util.List;
 
-//TODO: odroznic fun def od fun body do wykonania
 public class Function  {
 
     Token returnType;
@@ -47,7 +46,6 @@ public class Function  {
     }
 
     public void define(Scope scope){
-        //TODO: overloading?
 
         if (scope.getFunction(getId()) != null)
             throw new ExecutionException("Function with name " + id + " is already defined", id.getPosition());

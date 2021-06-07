@@ -1,6 +1,6 @@
 package currencies.structures.expressions;
 
-import currencies.executor.Scope;
+import currencies.execution.Scope;
 import currencies.types.CBoolean;
 import currencies.types.CType;
 

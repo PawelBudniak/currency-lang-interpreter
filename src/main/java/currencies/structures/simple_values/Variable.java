@@ -1,7 +1,7 @@
 package currencies.structures.simple_values;
 
-import currencies.ExecutionException;
-import currencies.executor.Scope;
+import currencies.execution.ExecutionException;
+import currencies.execution.Scope;
 import currencies.structures.expressions.RValue;
 import currencies.types.CType;
 

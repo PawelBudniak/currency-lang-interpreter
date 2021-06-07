@@ -51,8 +51,8 @@ void main(){
     number x = 3;
     print('first number: ', x);
 
-    # exchange from pln to gbp '3.0';
-    badFunction();
+    exchange from pln to gbp '3.0';
+    #badFunction();
 
     number x = 10 gbp + 10 gbp + 20 gbp + 40 gbp;
 

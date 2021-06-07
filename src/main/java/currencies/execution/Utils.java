@@ -1,17 +1,9 @@
-package currencies.executor;
+package currencies.execution;
 
-import currencies.InterpreterException;
 import currencies.types.CCurrency;
-import currencies.ExecutionException;
 import currencies.reader.CharPosition;
-import currencies.structures.expressions.RValue;
 
 public class Utils {
-//    public static void requireSameTypes(RValue first, RValue second, String action, CharPosition position){
-//        if (first.getValue() != second.getType())
-//            throw new ExecutionException("Cannot " + action + "values of different types", position);
-//    }
-
 
     public static void requireSameTypes(Object first, Object second, String action, CharPosition position){
         if (first.getClass() != second.getClass())

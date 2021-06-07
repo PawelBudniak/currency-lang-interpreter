@@ -1,7 +1,7 @@
 package currencies.structures;
 
-import currencies.executor.ReturnStatementException;
-import currencies.executor.Scope;
+import currencies.execution.ReturnStatementException;
+import currencies.execution.Scope;
 import currencies.reader.CharPosition;
 import currencies.structures.statements.Statement;
 import currencies.types.CType;
@@ -27,8 +27,6 @@ public class Block {
     }
 
     public void execute(Scope scope){
-     //TODO: argumenty funcalla nie traktowac jako outer
-
 
         scope.enterNewLocalScope();
 
@@ -37,14 +35,16 @@ public class Block {
                 statement.execute(scope);
             }
 
-            // keep rethrowing to find the block that is a function's body
+            // ReturnStatementException is used to easily find the main block of the function (with isFunctionBody set to true)
             catch (ReturnStatementException ex){
                 if (isFunctionBody) {
                     returnedValue = ex.getReturnedValue();
                     returnStatementPosition = ex.getPosition();
                     break;
                 }
+
                 else {
+                    // keep rethrowing to find the block that is a function's body, while unrolling the scope "stack"
                     scope.leaveLocalScope();
                     throw ex;
                 }

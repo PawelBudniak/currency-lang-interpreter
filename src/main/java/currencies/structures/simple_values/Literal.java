@@ -1,18 +1,14 @@
 package currencies.structures.simple_values;
 
-import currencies.executor.Scope;
-import currencies.types.CCurrency;
-import currencies.lexer.TokenType;
+import currencies.execution.Scope;
 import currencies.structures.expressions.RValue;
 import currencies.types.CType;
 
 public class Literal extends RValue {
     CType value;
-    TokenType type;
 
-    public Literal(CType value, TokenType type) {
+    public Literal(CType value) {
         this.value = value;
-        this.type = type;
     }
 
     @Override

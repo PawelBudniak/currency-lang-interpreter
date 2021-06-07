@@ -1,8 +1,8 @@
 package currencies.structures.statements;
 
-import currencies.ExecutionException;
-import currencies.InterpreterException;
-import currencies.executor.Scope;
+import currencies.execution.ExecutionException;
+import currencies.error.InterpreterException;
+import currencies.execution.Scope;
 import currencies.lexer.Token;
 import currencies.structures.expressions.RValue;
 import currencies.structures.simple_values.Identifier;
@@ -17,7 +17,6 @@ public class Assignment implements Statement{
 
     public Assignment(Token type, Identifier varId, RValue value) {
         this.type = type;
-        //TODO: trzymac stringa a nie var w klasie
         this.varId = varId;
         this.value = value;
     }
@@ -35,8 +34,6 @@ public class Assignment implements Statement{
 
         CType assigningValue = value.getValue(scope);
         Variable variable;
-
-        //TODO: implicit cast na bool?
 
         try {
 

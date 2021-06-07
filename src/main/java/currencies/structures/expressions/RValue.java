@@ -1,14 +1,11 @@
 package currencies.structures.expressions;
 
-import currencies.executor.Scope;
-import currencies.types.CCurrency;
+import currencies.execution.Scope;
 import currencies.lexer.Token;
 import currencies.lexer.TokenType;
 import currencies.types.CType;
 
-import java.math.BigDecimal;
 import java.util.List;
-import java.util.Objects;
 
 public abstract class RValue {
 

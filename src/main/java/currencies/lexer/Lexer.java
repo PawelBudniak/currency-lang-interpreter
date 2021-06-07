@@ -11,7 +11,6 @@ import java.util.stream.Collectors;
 
 import static java.util.Map.entry;
 
-//TODO: throw exception zamiast return unkown
 public class Lexer {
     private CodeInput source;
     private char current;

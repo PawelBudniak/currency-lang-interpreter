@@ -1,10 +1,9 @@
 package currencies.structures.expressions;
 
-import currencies.executor.Scope;
+import currencies.execution.Scope;
 import currencies.types.CBoolean;
 import currencies.types.CType;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class BoolTerm extends RValue{

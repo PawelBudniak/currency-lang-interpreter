@@ -1,8 +1,7 @@
 package currencies.structures.statements;
 
-import currencies.executor.Scope;
+import currencies.execution.Scope;
 
 public interface Statement {
-
-    default void execute(Scope scope) { }
+    void execute(Scope scope);
 }

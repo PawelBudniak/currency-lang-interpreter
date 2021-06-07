@@ -1,6 +1,6 @@
 package currencies.parser;
 
-import currencies.InterpreterException;
+import currencies.error.InterpreterException;
 import currencies.reader.CharPosition;
 
 public class SyntaxException extends InterpreterException {

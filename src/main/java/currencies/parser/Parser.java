@@ -422,20 +422,20 @@ public class Parser {
         if (currentToken.getType() == T_STR_LITERAL) {
             String strLiteral = (String) currentToken.getValue();
             nextToken();
-            return new Literal(new CString(strLiteral), T_KW_STRING);
+            return new Literal(new CString(strLiteral));
         } else if (currentToken.getType() == T_KW_TRUE || currentToken.getType() == T_KW_FALSE) {
             Boolean value = Boolean.valueOf((String) currentToken.getValue());
             nextToken();
-            return new Literal(new CBoolean(value), T_KW_BOOl);
+            return new Literal(new CBoolean(value));
         } else if (currentToken.getType() == T_NUMBER_LITERAL) {
             CNumber value = (CNumber) currentToken.getValue();
             nextToken();
             if (currentToken.getType() == T_CURRENCY_CODE) {
                 CCurrency currencyLiteral = new CCurrency(value, (String) currentToken.getValue());
                 nextToken();
-                return new Literal(currencyLiteral, T_KW_CURRENCY);
+                return new Literal(currencyLiteral);
             }
-            return new Literal(value, T_KW_NUMBER);
+            return new Literal(value);
         }
         return null;
     }

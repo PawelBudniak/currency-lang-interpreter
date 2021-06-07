@@ -1,6 +1,6 @@
 package currencies.structures.expressions;
 
-import currencies.executor.Scope;
+import currencies.execution.Scope;
 import currencies.lexer.Token;
 import currencies.lexer.TokenType;
 import currencies.types.CBoolean;
@@ -52,15 +52,7 @@ public class Factor extends RValue {
         String str = "";
 
         str += RValue.unaryOpToStr(unaryOp);
-
-        if (expression instanceof ArithmeticExpression){
-            str += "(";
-            str += expression.toString();
-            str += ")";
-        }
-        else{
-            str += expression.toString();
-        }
+        str += expression.toString();
 
         return str;
     }

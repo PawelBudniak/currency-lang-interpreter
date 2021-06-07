@@ -1,8 +1,7 @@
 package currencies.structures;
 
-import currencies.executor.Scope;
+import currencies.execution.Scope;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class Program {

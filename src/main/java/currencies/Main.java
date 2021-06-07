@@ -1,8 +1,8 @@
 package currencies;
 
+import currencies.error.ErrorHandler;
+import currencies.error.InterpreterException;
 import currencies.lexer.Lexer;
-import currencies.lexer.Token;
-import currencies.lexer.TokenType;
 import currencies.parser.Parser;
 import currencies.reader.FileReader;
 import currencies.structures.Program;
@@ -34,13 +34,6 @@ public class Main {
              }catch (InterpreterException e){
                  errorHandler.handle(e);
              }
-
-//            Token token = lexer.getNextToken();
-//            while (token.getType() != TokenType.T_EOT) {
-//                System.out.println(token);
-//                token = lexer.getNextToken();
-//            }
-//            String s = new StringBuilder().append('\\').append('t').toString();
 
         } catch (FileNotFoundException e) {
             System.err.println("This file does not exist");

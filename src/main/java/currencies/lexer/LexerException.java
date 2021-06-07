@@ -1,6 +1,6 @@
 package currencies.lexer;
 
-import currencies.InterpreterException;
+import currencies.error.InterpreterException;
 import currencies.reader.CharPosition;
 
 public class LexerException extends InterpreterException {

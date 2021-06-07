@@ -1,7 +1,7 @@
 package currencies.structures.simple_values;
 
-import currencies.ExecutionException;
-import currencies.executor.Scope;
+import currencies.execution.ExecutionException;
+import currencies.execution.Scope;
 import currencies.structures.Function;
 import currencies.structures.TypeAndId;
 import currencies.structures.expressions.RValue;
@@ -38,8 +38,6 @@ public class FunctionCall extends RValue implements Statement {
     @Override
     public void execute(Scope scope){
 
-        //TODO: jakis ogolny stdlib, typu Map<String, Executable> ?
-
         // built-in print function
         if (functionId.getName().equals("print")){
             for (RValue rValue: arguments){
@@ -55,7 +53,7 @@ public class FunctionCall extends RValue implements Statement {
 
 
 
-        function.call(scope.newFunCallScope(args));
+        function.call(scope.enterNewFunCallScope(args));
         returnValue = function.getReturnedValue();
     }
 

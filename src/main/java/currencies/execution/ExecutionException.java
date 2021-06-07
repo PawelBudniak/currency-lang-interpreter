@@ -1,5 +1,6 @@
-package currencies;
+package currencies.execution;
 
+import currencies.error.InterpreterException;
 import currencies.reader.CharPosition;
 
 public class ExecutionException extends InterpreterException {

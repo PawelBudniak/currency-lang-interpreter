@@ -1,8 +1,7 @@
 package currencies.structures.statements;
 
-import currencies.executor.Scope;
+import currencies.execution.Scope;
 import currencies.structures.Block;
-import currencies.structures.expressions.BoolExpression;
 import currencies.structures.expressions.RValue;
 
 public class IfStatement implements Statement {

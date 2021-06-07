@@ -1,12 +1,9 @@
 package currencies.structures.expressions;
 
-import currencies.ExecutionException;
-import currencies.InterpreterException;
-import currencies.executor.Scope;
+import currencies.execution.ExecutionException;
+import currencies.execution.Scope;
 import currencies.lexer.Token;
 import currencies.lexer.TokenType;
-import currencies.parser.Parser;
-import currencies.reader.CharPosition;
 import currencies.types.*;
 
 import java.util.List;

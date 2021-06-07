@@ -1,5 +1,6 @@
-package currencies;
+package currencies.error;
 
+import currencies.error.InterpreterException;
 import currencies.reader.CharPosition;
 import currencies.reader.FileReader;
 

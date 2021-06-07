@@ -2,9 +2,8 @@ package currencies.types;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import currencies.ExecutionException;
-import currencies.executor.Utils;
-import currencies.reader.CharPosition;
+import currencies.execution.ExecutionException;
+import currencies.execution.Utils;
 
 import java.io.FileReader;
 import java.io.IOException;
@@ -139,12 +138,6 @@ public class CCurrency extends CType<CCurrency> implements Comparable<CCurrency>
 //                                        nestedEntry -> NumberFactory.get(nestedEntry.getValue())
 //                                ))
 //                    ));
-
-            gson = new GsonBuilder().setPrettyPrinting().create();
-            String json = gson.toJson(exchangeRates);
-            System.out.println(json);
-
-
 
         } catch (IOException e) {
             throw new RuntimeException("Problem with exchange rates file\n"+ e.getMessage(), e);

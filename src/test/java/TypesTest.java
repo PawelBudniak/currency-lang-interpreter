@@ -1,6 +1,5 @@
-import currencies.executor.Scope;
+import currencies.execution.Scope;
 import currencies.parser.Parser;
-import currencies.structures.simple_values.Literal;
 import currencies.types.CBoolean;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
