@@ -27,7 +27,7 @@ public class Parser {
     private Lexer lexer;
     private Token currentToken;
 
-    private static final TokenType[] typeSpecifiers = {T_KW_NUMBER, T_KW_BOOl, T_KW_STRING, T_KW_CURRENCY};
+    private static final TokenType[] typeSpecifiers = {T_KW_NUMBER, T_KW_BOOl, T_KW_STRING, T_KW_CURRENCY, T_KW_ANY};
     private static final Set<TokenType> comparisonOperators = Set.of(T_GT, T_GTE, T_LTE, T_LT, T_EQUALS, T_NOTEQUALS);
 
     public Parser(Lexer lexer) {

@@ -45,6 +45,7 @@ public enum TokenType {
     T_KW_FALSE,
     T_KW_VOID,
     T_KW_RETURN,
+    T_KW_ANY,
     T_EOT,
     T_UNKNOWN;
 

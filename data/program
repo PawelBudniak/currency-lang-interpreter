@@ -47,11 +47,16 @@ number badFunction(){
     return 'string';
 }
 
-void main(){
-    number x = 3;
-    print('first number: ', x);
 
-    exchange from pln to gbp '3.0';
+
+void main(){
+    number nth_fib = 8;
+    print('fib: ', !!nth_fib);
+}
+
+void rest(){
+    currency kieszonkowe = 10  pln;
+    exchange from pln to gbp 0.25;
     #badFunction();
 
     number x = 10 gbp + 10 gbp + 20 gbp + 40 gbp;

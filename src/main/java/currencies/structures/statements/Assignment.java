@@ -11,20 +11,20 @@ import currencies.types.CType;
 
 
 public class Assignment implements Statement{
-    private Token type;
+    private Token typeToken;
     private Identifier varId;
     private RValue value;
 
-    public Assignment(Token type, Identifier varId, RValue value) {
-        this.type = type;
+    public Assignment(Token typeToken, Identifier varId, RValue value) {
+        this.typeToken = typeToken;
         this.varId = varId;
         this.value = value;
     }
 
     @Override
     public String toString() {
-        if (type != null){
-            return type.valueStr() + " " + varId + " = " + value +";";
+        if (typeToken != null){
+            return typeToken.valueStr() + " " + varId + " = " + value +";";
         }
         return varId + " = " + value + ";";
     }
@@ -38,10 +38,10 @@ public class Assignment implements Statement{
         try {
 
             // declaration and initialization, e.g int x = 3;
-            if (type != null) {
+            if (typeToken != null) {
 
 
-                variable = new Variable(varId, CType.typeOf(type.valueStr()));
+                variable = new Variable(varId, CType.typeOf(typeToken.getType()));
                 variable.setValue(assigningValue);
                 scope.newVariable(variable);
             }
@@ -65,8 +65,8 @@ public class Assignment implements Statement{
 
 
 
-    public Token getType() {
-        return type;
+    public Token getTypeToken() {
+        return typeToken;
     }
 
     public Identifier getVarId() {

@@ -57,7 +57,7 @@ public class Function  {
         block.execute(scope);
         if (returnType.getType() != TokenType.T_KW_VOID)
             try {
-                returnedValue = CType.assign(block.getReturnedValue(), CType.typeOf(returnType.valueStr()));
+                returnedValue = CType.assign(block.getReturnedValue(), CType.typeOf(returnType.getType()));
             }catch (ExecutionException e){
                 InterpreterException.setPositionAndRethrow(e, block.getReturnStatementPosition());
             }

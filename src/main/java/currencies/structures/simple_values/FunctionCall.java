@@ -71,7 +71,7 @@ public class FunctionCall extends RValue implements Statement {
             CType val = provided.next().getValue(scope);
             TypeAndId expectedVar = expected.next();
 
-            Variable var = new Variable(expectedVar.getId(), CType.typeOf(expectedVar.getTypeToken().valueStr()), val);
+            Variable var = new Variable(expectedVar.getId(), CType.typeOf(expectedVar.getTypeToken().getType()), val);
             matchedArgs.put(expectedVar.getId().getName(), var);
         }
 

@@ -1,4 +1,5 @@
 import currencies.execution.Scope;
+import currencies.lexer.TokenType;
 import currencies.structures.Function;
 import currencies.structures.Program;
 import currencies.structures.simple_values.FunctionCall;
@@ -254,7 +255,7 @@ public class StructuresExecuteTest {
         Parser p = Util.parserFromStringStream("a = 3.0;");
         Assignment assignment = (Assignment) p.tryParseAssignOrFunCall();
         Scope scope = Scope.empty();
-        Variable initialVar = new Variable(new Identifier("a", null), CType.typeOf("number"));
+        Variable initialVar = new Variable(new Identifier("a", null), CType.typeOf(TokenType.T_KW_NUMBER));
         initialVar.setValue(CNumber.fromStr("2"));
         scope.newVariable(initialVar);
 
@@ -296,7 +297,7 @@ public class StructuresExecuteTest {
         Parser p = Util.parserFromStringStream("a = 3.0;");
         Assignment assignment = (Assignment) p.tryParseAssignOrFunCall();
         Scope scope = Scope.empty();
-        Variable existingVar = new Variable(new Identifier("a", null), CType.typeOf("string"));
+        Variable existingVar = new Variable(new Identifier("a", null), CType.typeOf(TokenType.T_KW_STRING));
         existingVar.setValue(new CString("strVal"));
         scope.newVariable(existingVar);
 
@@ -406,7 +407,7 @@ public class StructuresExecuteTest {
         Parser p = Util.parserFromStringStream("a * 3");
         RValue rValue = p.tryParseRValue();
         Scope scope = Scope.empty();
-        scope.newVariable(new Variable(new Identifier("a", null), CType.typeOf("number"), CNumber.fromStr("5")));
+        scope.newVariable(new Variable(new Identifier("a", null), CType.typeOf(TokenType.T_KW_NUMBER), CNumber.fromStr("5")));
 
         assertEquals(CNumber.fromStr("15"), rValue.getValue(scope));
     }
@@ -644,6 +645,52 @@ public class StructuresExecuteTest {
         functionCall.execute(scope);
 
         assertEquals(CNumber.fromStr("5"), scope.getVariable("n").getSavedValue());
+    }
+
+    @Test
+    void assignAnythingToTypeAny(){
+        Parser p = Util.parserFromStringStream(
+                "any a = 3.0;" +
+                    "any b = 'str';");
+        Assignment assignment = (Assignment) p.tryParseAssignOrFunCall();
+        Assignment assignment2 = (Assignment) p.tryParseAssignOrFunCall();
+        Scope scope = Scope.empty();
+
+        assignment.execute(scope);
+        assignment2.execute(scope);
+
+        assertAll(
+                () -> assertEquals(CNumber.fromStr("3.0"), scope.getVariable("a").getSavedValue()),
+                () -> assertEquals(new CString("str"), scope.getVariable("b").getSavedValue())
+        );
+    }
+
+
+    @Test
+    void functionCanSpecifyReturnTypeAny(){
+        Parser p = Util.parserFromStringStream(
+                    "any fun1(){" +
+                        "   return 3.0 gbp;" +
+                        "}" +
+                        "any fun2(){" +
+                            "return 'str';" +
+                        "}" +
+                        "fun1();" +
+                        "fun2();"
+        );
+        Function fun1 = p.tryParseFunction();
+        Function fun2 = p.tryParseFunction();
+        FunctionCall funcall1 = (FunctionCall) p.tryParseAssignOrFunCall();
+        FunctionCall funcall2 = (FunctionCall) p.tryParseAssignOrFunCall();
+
+
+        Scope scope = Scope.empty();
+
+        scope.newFunction(fun1);
+        scope.newFunction(fun2);
+
+        assertEquals(new CCurrency("3.0", "gbp"), funcall1.getValue(scope));
+        assertEquals(new CString("str"), funcall2.getValue(scope));
     }
 
 

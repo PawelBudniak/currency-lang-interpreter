@@ -2,18 +2,21 @@ package currencies.types;
 
 
 import currencies.execution.ExecutionException;
+import currencies.lexer.TokenType;
 
 import java.util.Map;
 import java.util.Objects;
 import static java.util.Map.entry;
+import static currencies.lexer.TokenType.*;
 
 public abstract class CType <T extends CType<T>> implements Comparable<T>{
 
-    private static final Map<String, Class<?>> typeMap = Map.ofEntries(
-            entry("string", CString.class),
-            entry("number", CNumber.class),
-            entry("bool", CBoolean.class),
-            entry("currency", CCurrency.class)
+    private static final Map<TokenType, Class<?>> typeMap = Map.ofEntries(
+            entry(T_KW_STRING, CString.class),
+            entry(T_KW_NUMBER, CNumber.class),
+            entry(T_KW_BOOl, CBoolean.class),
+            entry(T_KW_CURRENCY, CCurrency.class),
+            entry(T_KW_ANY, CAny.class)
     );
 
 
@@ -34,13 +37,13 @@ public abstract class CType <T extends CType<T>> implements Comparable<T>{
         return Objects.hash(getValue());
     }
 
-    public static Class<?> typeOf(String s){
-        return typeMap.get(s);
+    public static Class<?> typeOf(TokenType typeToken){
+        return typeMap.get(typeToken);
     }
 
 
     public static CType assign (CType value, Class<?> requiredType){
-        if (value.getClass() != requiredType)
+        if (value.getClass() != requiredType && requiredType != CAny.class)
             throw new ExecutionException("Can't assign " + value.getClass() + " to " + requiredType, null);
         return value;
     }
