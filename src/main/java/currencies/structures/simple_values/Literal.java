@@ -5,7 +5,7 @@ import currencies.structures.expressions.RValue;
 import currencies.types.CType;
 
 public class Literal extends RValue {
-    CType value;
+    private CType value;
 
     public Literal(CType value) {
         this.value = value;

@@ -179,6 +179,14 @@ public class StructuresExecuteTest {
     }
 
     @Test
+    void currencyDivisionBy0Fails(){
+        Parser p = Util.parserFromStringStream("8 gbp / 0 gbp");
+        RValue rValue = p.tryParseRValue();
+
+        assertThrows(ExecutionException.class, () -> rValue.getValue(Scope.empty()));
+    }
+
+    @Test
     void currencyDivisionDifferentCodesThrows(){
         Parser p = Util.parserFromStringStream("8 gbp / 4 pln");
         RValue rValue = p.tryParseRValue();

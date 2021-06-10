@@ -11,7 +11,7 @@ import java.io.Reader;
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class CCurrency extends CType<CCurrency> implements Comparable<CCurrency>{
+public class CCurrency extends CType<CCurrency> {
 
     private static Map<String, Map<String, CNumber>> exchangeRates;
 

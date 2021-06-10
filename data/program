@@ -7,9 +7,9 @@ number factorial(number n){
     if (n == 0){
         return 1;
     }
-    #number ret = factorial(n-1);
-    #print('returned: ' ret);
-    return n * factorial(n-1);
+    number ret = n * factorial(n-1);
+    print('n value: ', n);
+    return ret;
 }
 
 
@@ -52,18 +52,16 @@ number badFunction(){
 void main(){
     number nth_fib = 8;
     print('fib: ', !!nth_fib);
-}
 
-void rest(){
     currency kieszonkowe = 10  pln;
     exchange from pln to gbp 0.25;
     #badFunction();
 
-    number x = 10 gbp + 10 gbp + 20 gbp + 40 gbp;
+   # currency x = 10 gbp + 10 gbp + 20 gbp + 40 gbp;
 
 
     testfun(4 pln);
-    print('x after: ', x);
+    #print('x after: ', x);
 
     number y = 0;
     while (y < 5){
@@ -71,7 +69,7 @@ void rest(){
         y = incr(y);
     }
 
-    x = 3 + 6;
+    number x = 3 + 6;
     print('x: ' + x);
     number z = x + 10;
     print('z:' + z);
@@ -95,7 +93,7 @@ void rest(){
     print('polish: ', polishWyplata);
     print('beka: ', beka);
 
-    if (beka < 800 gbp){
+    if (beka  < 800 gbp){
         print ('i wy tak zyjecie?');
     }
     if (beka >= 800 gbp){

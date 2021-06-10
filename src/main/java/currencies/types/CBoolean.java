@@ -4,7 +4,7 @@ import currencies.structures.expressions.RValue;
 
 import java.util.Objects;
 
-public class CBoolean extends CType<CBoolean> implements Comparable<CBoolean> {
+public class CBoolean extends CType<CBoolean> {
 
     private Boolean bool;
 

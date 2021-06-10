@@ -1,12 +1,13 @@
 package currencies.types;
 
+import currencies.execution.ExecutionException;
 import currencies.reader.CharPosition;
 
 import java.math.BigDecimal;
 
-public class CNumber extends CType<CNumber> implements Comparable<CNumber>{
+public class CNumber extends CType<CNumber>{
 
-    BigDecimal number;
+    private BigDecimal number;
 
     public CNumber(BigDecimal number) {
         this.number = number;
@@ -28,6 +29,9 @@ public class CNumber extends CType<CNumber> implements Comparable<CNumber>{
     public CCurrency multiply(CCurrency other) { return other.multiply(this); }
 
     public CNumber divide(CNumber other){
+        if (other.compareTo(CNumber.fromStr("0")) == 0){
+            throw new ExecutionException("Division by zero", null);
+        }
         return new CNumber(number.divide(other.getValue()));
     }
 

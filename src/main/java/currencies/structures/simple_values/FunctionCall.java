@@ -15,8 +15,8 @@ import java.util.Map;
 
 public class FunctionCall extends RValue implements Statement {
 
-    Identifier functionId;
-    List<RValue> arguments;
+    private Identifier functionId;
+    private List<RValue> arguments;
     private boolean asStatement = false;
     private CType returnValue;
 

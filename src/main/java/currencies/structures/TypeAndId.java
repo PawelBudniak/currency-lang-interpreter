@@ -7,8 +7,8 @@ import currencies.structures.simple_values.Identifier;
 import java.util.Objects;
 
 public class TypeAndId {
-    Token typeToken;
-    Identifier id;
+    private Token typeToken;
+    private Identifier id;
 
     public TypeAndId(Token typeToken, Identifier id) {
         this.typeToken = typeToken;

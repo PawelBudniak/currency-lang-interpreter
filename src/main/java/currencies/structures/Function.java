@@ -12,11 +12,11 @@ import java.util.List;
 
 public class Function  {
 
-    Token returnType;
-    Identifier id;
-    List<TypeAndId> argDefList;
-    Block block;
-    CType returnedValue;
+    private Token returnType;
+    private Identifier id;
+    private List<TypeAndId> argDefList;
+    private Block block;
+    private CType returnedValue;
 
     public Function(Token returnType, Identifier id, List<TypeAndId> argDefList, Block block) {
         this.returnType = returnType;
