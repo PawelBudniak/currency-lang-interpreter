@@ -22,7 +22,8 @@ They can be defined in a json file in a format like this (the default location i
     "pln": "5.0",
     "usd": "1.33"
   },
-  "usd": {
+  "usd":
+  {
     "pln": "3.0",
     "gbp": "0.7"
   }
@@ -37,7 +38,7 @@ Users can define their own functions, which can be recursive:
 number fib (number n){
   if (n==0 || n == 1){
     return 1;
-    }
+   }
   return fib(n-2) + fib(n-1);
 }
 ```
