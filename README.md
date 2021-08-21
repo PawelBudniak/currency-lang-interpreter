@@ -43,7 +43,7 @@ number fib (number n){
 }
 ```
 
-### Formal grammar of the language in the EBNF format:
+### Formal grammar in the EBNF format:
 
 ```
 # Whitespace inbetween these constructs are ignored
