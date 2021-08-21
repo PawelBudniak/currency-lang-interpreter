@@ -365,6 +365,14 @@ public class StructuresExecuteTest {
     }
 
     @Test
+    void threeNumbersSubtraction(){
+        Parser p = Util.parserFromStringStream("3 - 2 - 1");
+        RValue rValue = p.tryParseRValue();
+
+        assertEquals(CNumber.fromStr("0"), rValue.getValue(Scope.empty()));
+    }
+
+    @Test
     void currencyNumberSubtractionFails(){
         Parser p = Util.parserFromStringStream("3.5 gbp - 4.3");
         RValue rValue = p.tryParseRValue();

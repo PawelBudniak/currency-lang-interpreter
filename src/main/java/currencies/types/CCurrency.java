@@ -89,7 +89,6 @@ public class CCurrency extends CType<CCurrency> {
         exchangeRates.get(codeFrom).put(codeTo,rate);
     }
 
-
     public static Set<String> allCodes (){
         return exchangeRates.keySet();
     }

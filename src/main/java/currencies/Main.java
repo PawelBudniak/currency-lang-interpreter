@@ -17,12 +17,16 @@ public class Main {
 
     public static void main(String[] args) {
 
-        CCurrency.loadExchangeRates("data/exchangeRates.json");
+        String exchangeRates = "data/exchangeRates.json";
+        if (args.length == 2)
+            exchangeRates = args[1];
+
+        CCurrency.loadExchangeRates(exchangeRates);
 
         ErrorHandler errorHandler = new ErrorHandler();
 
 
-        try (RandomAccessFile fp = new RandomAccessFile("data/program", "rw")){
+        try (RandomAccessFile fp = new RandomAccessFile(args[0], "rw")){
 
              FileReader reader = new FileReader(fp);
              Parser p = new Parser(new Lexer(reader));
