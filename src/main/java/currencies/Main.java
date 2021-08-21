@@ -17,6 +17,11 @@ public class Main {
 
     public static void main(String[] args) {
 
+        if (args.length < 1){
+            System.err.println("Error: Please specify the source file as the first argument");
+            System.err.println("Usage: mvn exec:java <source-code-path> [exchange-rates-file-path]");
+        }
+
         String exchangeRates = "data/exchangeRates.json";
         if (args.length == 2)
             exchangeRates = args[1];
