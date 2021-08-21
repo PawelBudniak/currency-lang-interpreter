@@ -43,6 +43,17 @@ number fib (number n){
 }
 ```
 
+### Running the interpreter
+Prerequisites: maven.
+Download dependencies:
+```
+mvn compile
+```
+Run the program
+```
+mvn exec:java -Dexec.args="<source code file> [exchange rates file]"
+```
+
 ### Formal grammar definition in the EBNF format:
 
 ```
